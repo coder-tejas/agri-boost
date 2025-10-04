@@ -11,7 +11,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Calendar, Inbox, Search, Settings, Sprout } from "lucide-react"
+import { BotMessageSquare,  Settings, Sprout, Users, User2  } from "lucide-react"
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
@@ -22,22 +22,22 @@ const items = [
         icon: Sprout,
     },
     {
-        title: "Inbox",
-        url: "#",
-        icon: Inbox,
+        title: "ChatBot Assistant",
+        url: "/chatbot",
+        icon: BotMessageSquare ,
     },
     {
-        title: "Calendar",
-        url: "#",
-        icon: Calendar,
+        title: "Community",
+        url: "/community",
+        icon: Users ,
     },
     {
-        title: "Search",
-        url: "#",
-        icon: Search,
+        title: "Expert",
+        url: "/contact-to-expert",
+        icon: User2 ,
     },
     {
-        title: "Settings",
+        title: "Setting",
         url: "#",
         icon: Settings,
     },

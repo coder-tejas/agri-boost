@@ -82,12 +82,261 @@
     }
   },
   "crop-analysis": {
-    "title": "Crop Analysis",
-    "description": "Analyze your crop data to receive AI-powered insights and recommendations for maximizing your yield and efficiency.",
-    "form": {
-      "heading": "Crop Data Input",
-      "instructions": "Please fill in the details below to start your crop analysis. Accurate information will help us provide the best recommendations."
+    "upload": {
+      "pageTitle": "Upload Soil Test",
+      "stepper": {
+        "step1": "Upload Documents",
+        "step2": "Fill Questionnaire",
+        "step3": "Get Results"
+      },
+      "card": {
+        "title": "Upload Your Soil Test Report",
+        "description": "Upload your PDF soil test reports to get personalized crop recommendations."
+      },
+      "dropzone": {
+        "title": "Drag and drop your files here",
+        "subtitle": "or click below to browse your computer",
+        "browseButton": "Browse Files",
+        "supportedFormats": "Supports: PDF files only"
+      },
+      "uploadProgress": {
+        "uploading": "Uploading...",
+        "percentage": "{percent} %"
+      },
+      "uploadedFiles": {
+        "title": "Uploaded Files {count}",
+        "fileSize": "{size} MB"
+      },
+      "buttons": {
+        "backToHome": "Back to Home",
+        "continueToQuestionnaire": "Continue to Questionnaire"
+      }
+    },
+
+    "questionnaire": {
+      "pageTitle": "Farmer Questionnaire",
+      "stepper": {
+        "uploadComplete": "Upload Complete",
+        "fillQuestionnaire": "Fill Questionnaire",
+        "getResults": "Get Results"
+      },
+      "progress": {
+        "stepOf": "Step {current} of {total}",
+        "percentComplete": "{percent}% complete"
+      },
+      "step1": {
+        "title": "Location & Land Details",
+        "description": "Tell us about your farm location and land characteristics",
+        "fields": {
+          "location": {
+            "label": "Village/City",
+            "placeholder": "Enter your location"
+          },
+          "state": {
+            "label": "State",
+            "placeholder": "Select your state",
+            "options": {
+              "punjab": "Punjab",
+              "haryana": "Haryana",
+              "uttarPradesh": "Uttar Pradesh",
+              "maharashtra": "Maharashtra",
+              "gujarat": "Gujarat",
+              "rajasthan": "Rajasthan",
+              "other": "Other"
+            }
+          },
+          "landSize": {
+            "label": "Land Size (acres)",
+            "placeholder": "Enter land size in acres"
+          },
+          "soilType": {
+            "label": "Soil Type",
+            "placeholder": "Select soil type",
+            "options": {
+              "clay": "Clay",
+              "sandy": "Sandy",
+              "loamy": "Loamy",
+              "silty": "Silty",
+              "mixed": "Mixed"
+            }
+          }
+        }
+      },
+      "step2": {
+        "title": "Crop Information",
+        "description": "Tell us about the crops you want to grow and your yield goals",
+        "fields": {
+          "cropType": {
+            "label": "Crop Type",
+            "placeholder": "Select crop type",
+            "options": {
+              "wheat": "Wheat",
+              "rice": "Rice",
+              "corn": "Corn",
+              "cotton": "Cotton",
+              "sugarcane": "Sugarcane",
+              "soybeans": "Soybeans",
+              "vegetables": "Vegetables",
+              "fruits": "Fruits",
+              "other": "Other"
+            }
+          },
+          "previousYield": {
+            "label": "Previous Yield (quintals/acre)",
+            "placeholder": "e.g., 25 quintals/acre"
+          },
+          "targetYield": {
+            "label": "Target Yield (quintals/acre)",
+            "placeholder": "e.g., 30 quintals/acre"
+          },
+          "budget": {
+            "label": "Budget (₹)",
+            "placeholder": "Investment budget"
+          }
+        }
+      },
+      "step3": {
+        "title": "Farming Practices",
+        "description": "Share your current irrigation and fertilizer practices",
+        "fields": {
+          "irrigationMethod": {
+            "label": "Irrigation Method",
+            "placeholder": "Select irrigation method",
+            "options": {
+              "drip": "Drip Irrigation",
+              "sprinkler": "Sprinkler",
+              "flood": "Flood Irrigation",
+              "furrow": "Furrow Irrigation",
+              "rainfed": "Rain-fed",
+              "mixed": "Mixed Methods"
+            }
+          },
+          "fertilizerUse": {
+            "label": "Fertilizer Use",
+            "placeholder": "Select fertilizer type",
+            "options": {
+              "organic": "Organic Only",
+              "chemical": "Chemical Only",
+              "mixed": "Mixed (Organic + Chemical)",
+              "minimal": "Minimal Use",
+              "none": "No Fertilizers"
+            }
+          },
+          "pestIssues": {
+            "label": "Current Pest Issues",
+            "placeholder": "Describe any pest or disease problems you're facing"
+          }
+        }
+      },
+      "step4": {
+        "title": "Review & Additional Information",
+        "description": "Review your information and add any additional details",
+        "fields": {
+          "additionalInfo": {
+            "label": "Additional Information (Optional)",
+            "placeholder": "Any other details about your farm, challenges, or specific goals..."
+          }
+        },
+        "summary": {
+          "title": "Summary of Your Information",
+          "location": "Location",
+          "landSize": "Land Size",
+          "cropType": "Crop Type",
+          "soilType": "Soil Type",
+          "irrigation": "Irrigation",
+          "fertilizerUse": "Fertilizer Use",
+          "targetYield": "Target Yield",
+          "budget": "Budget",
+          "acres": "acres"
+        }
+      },
+      "buttons": {
+        "previous": "Previous",
+        "next": "Next Step",
+        "backToUpload": "Back to Upload",
+        "submit": "Submit & Get Results"
+      }
+    },
+   
+  "results": {
+    "header": {
+      "title": "Your Results",
+      "backButton": "Back to Form",
+      "shareButton": "Share",
+      "downloadButton": "Download PDF"
+    },
+    "progress": {
+      "uploadComplete": "Upload Complete",
+      "fillQuestionnaire": "Fill Questionnaire",
+      "getResults": "Get Results"
+    },
+    "summary": {
+      "title": "Analysis Complete!",
+      "description": "Here are your personalized crop recommendations based on your soil test and farm details",
+      "yieldImprovement": "Yield Improvement Potential"
+    },
+    "soilHealth": {
+      "title": "Soil Health Analysis",
+      "soilHealthScore": "Soil Health Score",
+      "organicMatter": "Organic Matter",
+      "nitrogen": "Nitrogen (N)",
+      "phosphorus": "Phosphorus (P)",
+      "potassium": "Potassium (K)",
+      "status": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "adequate": "Adequate"
+      }
+    },
+    "crops": {
+      "title": "Recommended Crops",
+      "match": "Match",
+      "expectedYield": "Expected Yield"
+    },
+    "fertilizer": {
+      "title": "Fertilizer Recommendations",
+      "tableHeaders": {
+        "fertilizer": "Fertilizer",
+        "amount": "Amount",
+        "timing": "Timing",
+        "priority": "Priority"
+      },
+      "priority": {
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      },
+      "timing": {
+        "preSowing": "Pre-sowing",
+        "atSowing": "At sowing",
+        "flowering": "Flowering stage"
+      },
+      "proTip": {
+        "title": "💡 Pro Tip",
+        "content": "Apply fertilizers based on soil moisture and weather conditions. Split nitrogen application for better efficiency and reduced environmental impact."
+      }
+    },
+    "irrigation": {
+      "title": "Irrigation Recommendations",
+      "recommended": "Recommended",
+      "frequency": "Frequency",
+      "amountPerIrrigation": "Amount per irrigation",
+      "waterConservation": {
+        "title": "💧 Water Conservation Benefits",
+        "benefit1": "30–40% water savings compared to flood irrigation",
+        "benefit2": "Better nutrient uptake efficiency",
+        "benefit3": "Reduced weed growth and disease pressure"
+      }
+    },
+    "cta": {
+      "title": "Ready to Implement These Recommendations?",
+      "description": "Download your personalized report or start a new analysis for a different field",
+      "downloadButton": "Download Full Report",
+      "analyzeButton": "Analyze Another Field"
     }
+  }
+
   },
   "sidebar": {}
 }
