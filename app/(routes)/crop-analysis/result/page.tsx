@@ -192,12 +192,12 @@ const ResultsPage = () => {
                     {
                       label: t("soilHealth.phosphorus"),
                       value: soilAnalysis.phosphorus,
-                      variant: "success" as const,
+                      variant: "secondary" as const,
                     },
                     {
                       label: t("soilHealth.potassium"),
                       value: soilAnalysis.potassium,
-                      variant: "success" as const,
+                      variant: "secondary" as const,
                     },
                   ].map((item, idx) => (
                     <div
