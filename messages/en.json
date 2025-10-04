@@ -1,0 +1,93 @@
+{
+  "landing": {
+    "header": {
+      "features": "Features",
+      "howItWorks": "How It Works",
+      "getStarted": "Get Started"
+    },
+    "hero": {
+      "badge": "Powered by Advanced AI Technology",
+      "title": {
+        "part1": "Maximize Your Crop Yields with",
+        "part2": "AI-Powered Insights"
+      },
+      "description": "Harness the power of artificial intelligence to predict crop yields, optimize farming strategies, and make data-driven decisions that boost your agricultural productivity.",
+      "cta": {
+        "primary": "Start Predicting Now",
+        "secondary": "Watch Demo"
+      },
+      "stats": {
+        "accuracy": {
+          "value": "98%",
+          "label": "Accuracy Rate"
+        },
+        "predictions": {
+          "value": "50K+",
+          "label": "Predictions Made"
+        },
+        "yieldIncrease": {
+          "value": "35%",
+          "label": "Avg Yield Increase"
+        }
+      }
+    },
+    "features": {
+      "title": "Powerful Features for Modern Farming",
+      "subtitle": "Everything you need to optimize your agricultural operations and maximize profitability",
+      "items": {
+        "yieldPrediction": {
+          "title": "Yield Predictions",
+          "description": "Advanced ML models analyze soil, weather, and crop data to predict yields with exceptional accuracy"
+        },
+        "weatherIntegration": {
+          "title": "Weather Integration",
+          "description": "Real-time weather data and forecasts to optimize planting schedules and resource allocation"
+        },
+        "smartOptimization": {
+          "title": "Smart Optimization",
+          "description": "AI-driven recommendations for fertilizer, irrigation, and crop rotation strategies"
+        },
+        "riskAssessment": {
+          "title": "Risk Assessment",
+          "description": "Identify potential threats and receive early warnings for disease, pests, and adverse conditions"
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "How AgroBoost Works",
+      "subtitle": "Three simple steps to transform your farming operations",
+      "steps": {
+        "step1": {
+          "title": "Input Your Data",
+          "description": "Enter farm details including soil type, location, crop variety, and historical data through our intuitive interface"
+        },
+        "step2": {
+          "title": "AI Analysis",
+          "description": "Our advanced algorithms process your data alongside weather patterns, soil conditions, and agricultural best practices"
+        },
+        "step3": {
+          "title": "Get Recommendations",
+          "description": "Receive detailed yield predictions and actionable optimization strategies to maximize your crop production"
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to Transform Your Farm?",
+      "subtitle": "Join thousands of farmers who are already using AgroBoost to increase their yields and profitability",
+      "button": "Start Your Free Trial"
+    },
+    "footer": {
+      "description": "Empowering farmers with AI-driven insights for sustainable and profitable agriculture",
+      "copyright": "© 2025 AgroBoost. All rights reserved."
+    }
+  },
+  "crop-analysis": {
+    "title": "Crop Analysis",
+    "description": "Analyze your crop data to receive AI-powered insights and recommendations for maximizing your yield and efficiency.",
+    "form": {
+      "heading": "Crop Data Input",
+      "instructions": "Please fill in the details below to start your crop analysis. Accurate information will help us provide the best recommendations."
+    }
+  },
+  "sidebar": {}
+}
