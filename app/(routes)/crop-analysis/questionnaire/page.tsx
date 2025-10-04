@@ -66,19 +66,19 @@ const QuestionnairePage = () => {
       case 1:
         return (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center text-2xl">
-                <MapPin className="w-6 h-6 mr-3 text-primary" />
-                {t("step1.title")}
+            <CardHeader className="px-4 sm:px-6">
+              <CardTitle className="flex items-center text-xl sm:text-2xl">
+                <MapPin className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3 text-primary flex-shrink-0" />
+                <span className="break-words">{t("step1.title")}</span>
               </CardTitle>
-              <CardDescription className="text-lg">
+              <CardDescription className="text-base sm:text-lg">
                 {t("step1.description")}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
+            <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="location" className="text-base font-medium">
+                  <Label htmlFor="location" className="text-sm sm:text-base font-medium">
                     {t("step1.fields.location.label")}
                   </Label>
                   <Input
@@ -86,18 +86,18 @@ const QuestionnairePage = () => {
                     placeholder={t("step1.fields.location.placeholder")}
                     value={formData.location}
                     onChange={(e) => updateFormData("location", e.target.value)}
-                    className="h-12 text-base"
+                    className="h-10 sm:h-12 text-sm sm:text-base"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="state" className="text-base font-medium">
+                  <Label htmlFor="state" className="text-sm sm:text-base font-medium">
                     {t("step1.fields.state.label")}
                   </Label>
                   <Select
                     value={formData.state}
                     onValueChange={(value) => updateFormData("state", value)}
                   >
-                    <SelectTrigger className="h-12 text-base">
+                    <SelectTrigger className="h-10 sm:h-12 text-sm sm:text-base">
                       <SelectValue placeholder={t("step1.fields.state.placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -112,9 +112,9 @@ const QuestionnairePage = () => {
                   </Select>
                 </div>
               </div>
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="landSize" className="text-base font-medium">
+                  <Label htmlFor="landSize" className="text-sm sm:text-base font-medium">
                     {t("step1.fields.landSize.label")}
                   </Label>
                   <Input
@@ -123,24 +123,24 @@ const QuestionnairePage = () => {
                     placeholder={t("step1.fields.landSize.placeholder")}
                     value={formData.landSize}
                     onChange={(e) => updateFormData("landSize", e.target.value)}
-                    className="h-12 text-base"
+                    className="h-10 sm:h-12 text-sm sm:text-base"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="soilType" className="text-base font-medium">
+                  <Label htmlFor="soilType" className="text-sm sm:text-base font-medium">
                     {t("step1.fields.soilType.label")}
                   </Label>
                   <Select
                     value={formData.soilType}
                     onValueChange={(value) => updateFormData("soilType", value)}
                   >
-                    <SelectTrigger className="h-12 text-base">
+                    <SelectTrigger className="h-10 sm:h-12 text-sm sm:text-base">
                       <SelectValue placeholder={t("step1.fields.soilType.placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="clay">{t("step1.fields.soilType.options.clay")}</SelectItem>
                       <SelectItem value="sandy">{t("step1.fields.soilType.options.sandy")}</SelectItem>
-<SelectItem value="loamy">{t("step1.fields.soilType.options.loamy")}</SelectItem>
+                      <SelectItem value="loamy">{t("step1.fields.soilType.options.loamy")}</SelectItem>
                       <SelectItem value="silty">{t("step1.fields.soilType.options.silty")}</SelectItem>
                       <SelectItem value="mixed">{t("step1.fields.soilType.options.mixed")}</SelectItem>
                     </SelectContent>
@@ -154,26 +154,26 @@ const QuestionnairePage = () => {
       case 2:
         return (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center text-2xl">
-                <Wheat className="w-6 h-6 mr-3 text-crop-green" />
-                {t("step2.title")}
+            <CardHeader className="px-4 sm:px-6">
+              <CardTitle className="flex items-center text-xl sm:text-2xl">
+                <Wheat className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3 text-crop-green flex-shrink-0" />
+                <span className="break-words">{t("step2.title")}</span>
               </CardTitle>
-              <CardDescription className="text-lg">
+              <CardDescription className="text-base sm:text-lg">
                 {t("step2.description")}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
+            <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="cropType" className="text-base font-medium">
+                  <Label htmlFor="cropType" className="text-sm sm:text-base font-medium">
                     {t("step2.fields.cropType.label")}
                   </Label>
                   <Select
                     value={formData.cropType}
                     onValueChange={(value) => updateFormData("cropType", value)}
                   >
-                    <SelectTrigger className="h-12 text-base">
+                    <SelectTrigger className="h-10 sm:h-12 text-sm sm:text-base">
                       <SelectValue placeholder={t("step2.fields.cropType.placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -192,7 +192,7 @@ const QuestionnairePage = () => {
                 <div className="space-y-2">
                   <Label
                     htmlFor="previousYield"
-                    className="text-base font-medium"
+                    className="text-sm sm:text-base font-medium"
                   >
                     {t("step2.fields.previousYield.label")}
                   </Label>
@@ -203,15 +203,15 @@ const QuestionnairePage = () => {
                     onChange={(e) =>
                       updateFormData("previousYield", e.target.value)
                     }
-                    className="h-12 text-base"
+                    className="h-10 sm:h-12 text-sm sm:text-base"
                   />
                 </div>
               </div>
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <Label
                     htmlFor="targetYield"
-                    className="text-base font-medium"
+                    className="text-sm sm:text-base font-medium"
                   >
                     {t("step2.fields.targetYield.label")}
                   </Label>
@@ -222,11 +222,11 @@ const QuestionnairePage = () => {
                     onChange={(e) =>
                       updateFormData("targetYield", e.target.value)
                     }
-                    className="h-12 text-base"
+                    className="h-10 sm:h-12 text-sm sm:text-base"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="budget" className="text-base font-medium">
+                  <Label htmlFor="budget" className="text-sm sm:text-base font-medium">
                     {t("step2.fields.budget.label")}
                   </Label>
                   <Input
@@ -235,7 +235,7 @@ const QuestionnairePage = () => {
                     placeholder={t("step2.fields.budget.placeholder")}
                     value={formData.budget}
                     onChange={(e) => updateFormData("budget", e.target.value)}
-                    className="h-12 text-base"
+                    className="h-10 sm:h-12 text-sm sm:text-base"
                   />
                 </div>
               </div>
@@ -246,21 +246,21 @@ const QuestionnairePage = () => {
       case 3:
         return (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center text-2xl">
-                <Droplets className="w-6 h-6 mr-3 text-blue-500" />
-                {t("step3.title")}
+            <CardHeader className="px-4 sm:px-6">
+              <CardTitle className="flex items-center text-xl sm:text-2xl">
+                <Droplets className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3 text-blue-500 flex-shrink-0" />
+                <span className="break-words">{t("step3.title")}</span>
               </CardTitle>
-              <CardDescription className="text-lg">
+              <CardDescription className="text-base sm:text-lg">
                 {t("step3.description")}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
+            <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <Label
                     htmlFor="irrigationMethod"
-                    className="text-base font-medium"
+                    className="text-sm sm:text-base font-medium"
                   >
                     {t("step3.fields.irrigationMethod.label")}
                   </Label>
@@ -270,7 +270,7 @@ const QuestionnairePage = () => {
                       updateFormData("irrigationMethod", value)
                     }
                   >
-                    <SelectTrigger className="h-12 text-base">
+                    <SelectTrigger className="h-10 sm:h-12 text-sm sm:text-base">
                       <SelectValue placeholder={t("step3.fields.irrigationMethod.placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -286,7 +286,7 @@ const QuestionnairePage = () => {
                 <div className="space-y-2">
                   <Label
                     htmlFor="fertilizerUse"
-                    className="text-base font-medium"
+                    className="text-sm sm:text-base font-medium"
                   >
                     {t("step3.fields.fertilizerUse.label")}
                   </Label>
@@ -296,7 +296,7 @@ const QuestionnairePage = () => {
                       updateFormData("fertilizerUse", value)
                     }
                   >
-                    <SelectTrigger className="h-12 text-base">
+                    <SelectTrigger className="h-10 sm:h-12 text-sm sm:text-base">
                       <SelectValue placeholder={t("step3.fields.fertilizerUse.placeholder")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -310,7 +310,7 @@ const QuestionnairePage = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="pestIssues" className="text-base font-medium">
+                <Label htmlFor="pestIssues" className="text-sm sm:text-base font-medium">
                   {t("step3.fields.pestIssues.label")}
                 </Label>
                 <Textarea
@@ -318,7 +318,7 @@ const QuestionnairePage = () => {
                   placeholder={t("step3.fields.pestIssues.placeholder")}
                   value={formData.pestIssues}
                   onChange={(e) => updateFormData("pestIssues", e.target.value)}
-                  className="min-h-24 text-base"
+                  className="min-h-20 sm:min-h-24 text-sm sm:text-base"
                 />
               </div>
             </CardContent>
@@ -328,19 +328,19 @@ const QuestionnairePage = () => {
       case 4:
         return (
           <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">
+            <CardHeader className="px-4 sm:px-6">
+              <CardTitle className="text-xl sm:text-2xl">
                 {t("step4.title")}
               </CardTitle>
-              <CardDescription className="text-lg">
+              <CardDescription className="text-base sm:text-lg">
                 {t("step4.description")}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
               <div className="space-y-2">
                 <Label
                   htmlFor="additionalInfo"
-                  className="text-base font-medium"
+                  className="text-sm sm:text-base font-medium"
                 >
                   {t("step4.fields.additionalInfo.label")}
                 </Label>
@@ -351,17 +351,17 @@ const QuestionnairePage = () => {
                   onChange={(e) =>
                     updateFormData("additionalInfo", e.target.value)
                   }
-                  className="min-h-32 text-base"
+                  className="min-h-24 sm:min-h-32 text-sm sm:text-base"
                 />
               </div>
 
-              <div className="bg-accent p-6 rounded-lg">
-                <h4 className="font-semibold text-lg text-accent-foreground mb-3">
+              <div className="bg-accent p-4 sm:p-6 rounded-lg">
+                <h4 className="font-semibold text-base sm:text-lg text-accent-foreground mb-3">
                   {t("step4.summary.title")}
                 </h4>
-                <div className="grid md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
+                  <div className="space-y-2">
+                    <p className="break-words">
                       <strong>{t("step4.summary.location")}:</strong> {formData.location},{" "}
                       {formData.state}
                     </p>
@@ -375,7 +375,7 @@ const QuestionnairePage = () => {
                       <strong>{t("step4.summary.soilType")}:</strong> {formData.soilType}
                     </p>
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <p>
                       <strong>{t("step4.summary.irrigation")}:</strong> {formData.irrigationMethod}
                     </p>
@@ -385,7 +385,7 @@ const QuestionnairePage = () => {
                     <p>
                       <strong>{t("step4.summary.targetYield")}:</strong> {formData.targetYield}
                     </p>
-                    <p>
+                    <p className="break-words">
                       <strong>{t("step4.summary.budget")}:</strong> ₹{formData.budget}
                     </p>
                   </div>
@@ -404,35 +404,54 @@ const QuestionnairePage = () => {
     <div className="min-h-screen bg-background">
       <AppHeader>
         {/* Header */}
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-                  <Wheat className="w-5 h-5 text-white" />
-                </div>
-                <h1 className="text-2xl font-bold text-foreground">
-                  {t("pageTitle")}
-                </h1>
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+          <div className="flex items-center justify-center">
+            <div className="flex items-center space-x-2">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+                <Wheat className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+                {t("pageTitle")}
+              </h1>
             </div>
           </div>
         </div>
       </AppHeader>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         <div className="max-w-4xl mx-auto">
-          {/* Progress Steps */}
-          <div className="mb-8">
+          {/* Progress Steps - Desktop/Tablet */}
+          <div className="mb-6 sm:mb-8 hidden sm:block">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2 opacity-50">
                 <div className="w-8 h-8 bg-crop-green rounded-full flex items-center justify-center bg-primary-400 text-white font-semibold">
                   ✓
                 </div>
-                <span className="text-green-800 font-semibold">
+                <span className="text-green-800 font-semibold text-sm md:text-base">
                   {t("stepper.uploadComplete")}
                 </span>
               </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold">
+                  2
+                </div>
+                <span className="font-semibold text-primary text-sm md:text-base">
+                  {t("stepper.fillQuestionnaire")}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2 opacity-50">
+                <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center text-muted-foreground font-semibold">
+                  3
+                </div>
+                <span className="text-muted-foreground text-sm md:text-base">{t("stepper.getResults")}</span>
+              </div>
+            </div>
+            <Progress value={66} className="h-2" />
+          </div>
+
+          {/* Progress Steps - Mobile */}
+          <div className="mb-4 sm:hidden">
+            <div className="flex items-center justify-center mb-3">
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold">
                   2
@@ -441,23 +460,20 @@ const QuestionnairePage = () => {
                   {t("stepper.fillQuestionnaire")}
                 </span>
               </div>
-              <div className="flex items-center space-x-2 opacity-50">
-                <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center text-muted-foreground font-semibold">
-                  3
-                </div>
-                <span className="text-muted-foreground">{t("stepper.getResults")}</span>
-              </div>
+            </div>
+            <div className="text-center text-xs text-muted-foreground mb-3">
+              Step 2 of 3
             </div>
             <Progress value={66} className="h-2" />
           </div>
 
           {/* Step Progress */}
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-foreground">
+              <span className="text-xs sm:text-sm font-medium text-foreground">
                 {t("progress.stepOf", { current: currentStep, total: totalSteps })}
               </span>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 {t("progress.percentComplete", { percent: Math.round(progressValue) })}
               </span>
             </div>
@@ -465,27 +481,27 @@ const QuestionnairePage = () => {
           </div>
 
           {/* Current Step Content */}
-          <div className="mb-8">{renderStep()}</div>
+          <div className="mb-6 sm:mb-8">{renderStep()}</div>
 
-          {/* Navigation */}
-          <div className="flex justify-between">
+          {/* Navigation - Mobile Stack */}
+          <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
             <Button
               variant="outline"
               size="lg"
               onClick={prevStep}
               disabled={currentStep === 1}
-              className="text-lg px-6 py-3"
+              className="text-base sm:text-lg px-4 sm:px-6 py-2 sm:py-3 w-full sm:w-auto order-2 sm:order-1"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               {t("buttons.previous")}
             </Button>
-            <Button variant="ghost" size="lg" asChild>
-              <Link href="/crop-analysis/upload">
+            <Button variant="ghost" size="lg" asChild className="w-full sm:w-auto order-3 sm:order-2">
+              <Link href="/crop-analysis/upload" className="text-sm sm:text-base">
                 {t("buttons.backToUpload")}
               </Link>
             </Button>
             {currentStep === totalSteps ? (
-              <Button size="lg" className="text-lg px-8 py-3" asChild>
+              <Button size="lg" className="text-base sm:text-lg px-6 sm:px-8 py-2 sm:py-3 w-full sm:w-auto order-1 sm:order-3" asChild>
                 <Link href="/crop-analysis/result">
                   {t("buttons.submit")}
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -495,7 +511,7 @@ const QuestionnairePage = () => {
               <Button
                 size="lg"
                 onClick={nextStep}
-                className="text-lg px-8 py-3"
+                className="text-base sm:text-lg px-6 sm:px-8 py-2 sm:py-3 w-full sm:w-auto order-1 sm:order-3"
               >
                 {t("buttons.next")}
                 <ArrowRight className="w-4 h-4 ml-2" />

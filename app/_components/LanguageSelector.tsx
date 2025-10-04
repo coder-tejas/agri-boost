@@ -50,7 +50,7 @@ export default function LanguageSelector() {
   };
 
   return (
-    <div className="relative w-40 font-sans text-gray-800">
+    <div className="relative w-28 font-sans text-gray-800">
       <button
         className="w-full flex items-center justify-between p-3 bg-white rounded-lg shadow-md border border-gray-200"
         onClick={() => setOpen(!open)}

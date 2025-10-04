@@ -54,7 +54,7 @@
       }
     },
     "howItWorks": {
-      "title": "How AgroBoost Works",
+      "title": "How AgriBoost Works",
       "subtitle": "Three simple steps to transform your farming operations",
       "steps": {
         "step1": {
@@ -73,12 +73,12 @@
     },
     "cta": {
       "title": "Ready to Transform Your Farm?",
-      "subtitle": "Join thousands of farmers who are already using AgroBoost to increase their yields and profitability",
+      "subtitle": "Join thousands of farmers who are already using AgriBoost to increase their yields and profitability",
       "button": "Start Your Free Trial"
     },
     "footer": {
       "description": "Empowering farmers with AI-driven insights for sustainable and profitable agriculture",
-      "copyright": "© 2025 AgroBoost. All rights reserved."
+      "copyright": "© 2025 AgriBoost. All rights reserved."
     }
   },
   "crop-analysis": {

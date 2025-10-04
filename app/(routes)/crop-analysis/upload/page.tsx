@@ -23,36 +23,57 @@ const Stepper = ({ activeIndex }: { activeIndex: number }) => {
     { label: t("step3") },
   ];
   return (
-    <div className="mb-8">
-      <div className="flex items-center justify-between mb-4">
-        {steps.map((step, idx) => (
-          <div
-            key={step.label}
-            className={`flex items-center space-x-2 ${
-              idx > activeIndex ? "opacity-50" : ""
-            }`}
-          >
+    <div className="mb-6 md:mb-8">
+      {/* Desktop/Tablet Stepper */}
+      <div className="hidden sm:block">
+        <div className="flex items-center justify-between mb-4">
+          {steps.map((step, idx) => (
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-                idx === activeIndex
-                  ? "bg-gradient-to-br from-primary-500 to-secondary-600 text-white"
-                  : "bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-400"
+              key={step.label}
+              className={`flex items-center space-x-2 ${
+                idx > activeIndex ? "opacity-50" : ""
               }`}
             >
-              {idx + 1}
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
+                  idx === activeIndex
+                    ? "bg-gradient-to-br from-primary-500 to-secondary-600 text-white"
+                    : "bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-400"
+                }`}
+              >
+                {idx + 1}
+              </div>
+              <span
+                className={`font-semibold text-sm md:text-base ${
+                  idx === activeIndex
+                    ? "text-primary-600 dark:text-primary-400"
+                    : "text-neutral-500 dark:text-neutral-400"
+                }`}
+              >
+                {step.label}
+              </span>
             </div>
-            <span
-              className={`font-semibold ${
-                idx === activeIndex
-                  ? "text-primary-600 dark:text-primary-400"
-                  : "text-neutral-500 dark:text-neutral-400"
-              }`}
-            >
-              {step.label}
+          ))}
+        </div>
+      </div>
+      
+      {/* Mobile Stepper */}
+      <div className="sm:hidden">
+        <div className="flex items-center justify-center mb-3">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center font-semibold bg-gradient-to-br from-primary-500 to-secondary-600 text-white">
+              {activeIndex + 1}
+            </div>
+            <span className="font-semibold text-primary-600 dark:text-primary-400">
+              {steps[activeIndex].label}
             </span>
           </div>
-        ))}
+        </div>
+        <div className="text-center text-xs text-neutral-500 dark:text-neutral-400 mb-3">
+          Step {activeIndex + 1} of {steps.length}
+        </div>
       </div>
+      
       <Progress
         value={((activeIndex + 1) / steps.length) * 100}
         className="h-2"
@@ -124,14 +145,14 @@ const UploadPage = () => {
     <div className="min-h-screen bg-white dark:bg-neutral-900">
       {/* Header, navigation, branding */}
       <AppHeader>
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
           <div className="flex items-center justify-center">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-600 rounded-lg flex items-center justify-center">
-                <Upload className="w-5 h-5 text-white" />
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-primary-500 to-secondary-600 rounded-lg flex items-center justify-center">
+                <Upload className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
               <div className="flex-1 flex justify-center">
-                <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
+                <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white">
                   {t("pageTitle")}
                 </h1>
               </div>
@@ -140,24 +161,24 @@ const UploadPage = () => {
         </div>
       </AppHeader>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         <div className="max-w-4xl mx-auto">
           {/* Stepper Component */}
           <Stepper activeIndex={0} />
 
           {/* Upload Card */}
-          <Card className="mb-8 border-neutral-200 dark:border-neutral-700">
-            <CardHeader>
-              <CardTitle className="text-2xl text-neutral-900 dark:text-white">
+          <Card className="mb-6 sm:mb-8 border-neutral-200 dark:border-neutral-700">
+            <CardHeader className="px-4 sm:px-6 py-4 sm:py-6">
+              <CardTitle className="text-xl sm:text-2xl text-neutral-900 dark:text-white">
                 {t("card.title")}
               </CardTitle>
-              <CardDescription className="text-lg text-neutral-600 dark:text-neutral-300">
+              <CardDescription className="text-base sm:text-lg text-neutral-600 dark:text-neutral-300">
                 {t("card.description")}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
               <div
-                className={`border-2 border-dashed rounded-lg p-12 text-center transition-all duration-300 ${
+                className={`border-2 border-dashed rounded-lg p-6 sm:p-8 md:p-12 text-center transition-all duration-300 ${
                   isDragOver
                     ? "border-primary-500 bg-primary-50 dark:bg-primary-900/10 scale-105"
                     : "border-neutral-300 dark:border-neutral-600 hover:border-primary-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
@@ -166,11 +187,11 @@ const UploadPage = () => {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
               >
-                <Upload className="w-16 h-16 text-neutral-400 dark:text-neutral-500 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2 text-neutral-900 dark:text-white">
+                <Upload className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 text-neutral-400 dark:text-neutral-500 mx-auto mb-3 sm:mb-4" />
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 text-neutral-900 dark:text-white px-2">
                   {t("dropzone.title")}
                 </h3>
-                <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+                <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 mb-4 sm:mb-6 px-2">
                   {t("dropzone.subtitle")}
                 </p>
                 <input
@@ -184,24 +205,24 @@ const UploadPage = () => {
                 <Button
                   size="lg"
                   asChild
-                  className="bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white"
+                  className="bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white w-full sm:w-auto"
                 >
                   <label htmlFor="file-input" className="cursor-pointer">
                     {t("dropzone.browseButton")}
                   </label>
                 </Button>
-                <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-4">
+                <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-3 sm:mt-4 px-2">
                   {t("dropzone.supportedFormats")}
                 </p>
               </div>
 
               {uploadProgress > 0 && uploadProgress < 100 && (
-                <div className="mt-6">
+                <div className="mt-4 sm:mt-6">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                    <span className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
                       {t("uploadProgress.uploading")}
                     </span>
-                    <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                    <span className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
                       {t("uploadProgress.percentage", { percent: uploadProgress })}
                     </span>
                   </div>
@@ -213,27 +234,29 @@ const UploadPage = () => {
 
           {/* Uploaded Files List */}
           {uploadedFiles.length > 0 && (
-            <Card className="mb-8 border-neutral-200 dark:border-neutral-700">
-              <CardHeader>
-                <CardTitle className="flex items-center text-neutral-900 dark:text-white">
-                  <CheckCircle className="w-5 h-5 text-success mr-2" />
-                  {t("uploadedFiles.title", { count: uploadedFiles.length })}
+            <Card className="mb-6 sm:mb-8 border-neutral-200 dark:border-neutral-700">
+              <CardHeader className="px-4 sm:px-6 py-4 sm:py-6">
+                <CardTitle className="flex items-center text-base sm:text-lg text-neutral-900 dark:text-white">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-success mr-2 flex-shrink-0" />
+                  <span className="break-words">
+                    {t("uploadedFiles.title", { count: uploadedFiles.length })}
+                  </span>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
+              <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+                <div className="space-y-2 sm:space-y-3">
                   {uploadedFiles.map((file, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700"
+                      className="flex items-center justify-between p-3 sm:p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 gap-2 sm:gap-3"
                     >
-                      <div className="flex items-center space-x-3">
-                        <FileText className="w-8 h-8 text-primary-600 dark:text-primary-400" />
-                        <div>
-                          <p className="font-medium text-neutral-900 dark:text-white">
+                      <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+                        <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600 dark:text-primary-400 flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-sm sm:text-base text-neutral-900 dark:text-white truncate">
                             {file.name}
                           </p>
-                          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                          <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
                             {t("uploadedFiles.fileSize", { size: (file.size / 1024 / 1024).toFixed(2)  })}
                           </p>
                         </div>
@@ -242,7 +265,7 @@ const UploadPage = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => removeFile(index)}
-                        className="hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400"
+                        className="hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400 flex-shrink-0"
                       >
                         <X className="w-4 h-4" />
                       </Button>
@@ -252,26 +275,29 @@ const UploadPage = () => {
               </CardContent>
             </Card>
           )}
-          <Button variant="ghost" size="lg" asChild>
-            <Link href="/">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {t("buttons.backToHome")}
-            </Link>
-          </Button>
-          {/* Next Step Button */}
-          {uploadedFiles.length > 0 && (
-            <div className="flex justify-center">
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between">
+            <Button variant="ghost" size="lg" asChild className="w-full sm:w-auto">
+              <Link href="/">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                {t("buttons.backToHome")}
+              </Link>
+            </Button>
+            
+            {/* Next Step Button */}
+            {uploadedFiles.length > 0 && (
               <Button
                 size="lg"
-                className="text-lg px-8 py-6 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white shadow-lg hover:shadow-xl transition-all"
+                className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
                 asChild
               >
                 <Link href="/crop-analysis/questionnaire">
                   {t("buttons.continueToQuestionnaire")}
                 </Link>
               </Button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>
