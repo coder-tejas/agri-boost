@@ -338,5 +338,16 @@
   }
 
   },
-  "sidebar": {}
+  "sidebar": {
+    "navigation": {
+      "cropAnalysis": "Crop Analysis",
+      "chatbotAssistant": "ChatBot Assistant",
+      "community": "Community",
+      "expert": "Expert",
+      "setting": "Setting"
+    },
+    "logo": {
+      "alt": "logo"
+    }
+  }
 }

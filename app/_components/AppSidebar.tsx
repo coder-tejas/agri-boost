@@ -11,70 +11,74 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { BotMessageSquare,  Settings, Sprout, Users, User2  } from "lucide-react"
+import { BotMessageSquare, Settings, Sprout, Users, User2 } from "lucide-react"
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-
-const items = [
-    {
-        title: "Crop Analysis",
-        url: "/crop-analysis",
-        icon: Sprout,
-    },
-    {
-        title: "ChatBot Assistant",
-        url: "/chatbot",
-        icon: BotMessageSquare ,
-    },
-    {
-        title: "Community",
-        url: "/community",
-        icon: Users ,
-    },
-    {
-        title: "Expert",
-        url: "/contact-to-expert",
-        icon: User2 ,
-    },
-    {
-        title: "Setting",
-        url: "#",
-        icon: Settings,
-    },
-]
+import { useTranslations } from 'next-intl'
 
 export function AppSidebar() {
-    const path = usePathname();
+    const t = useTranslations('sidebar')
+    const path = usePathname()
+    
+    const items = [
+        {
+            title: t('navigation.cropAnalysis'),
+            url: "/crop-analysis/upload",
+            icon: Sprout,
+        },
+        {
+            title: t('navigation.chatbotAssistant'),
+            url: "/chatbot",
+            icon: BotMessageSquare,
+        },
+        {
+            title: t('navigation.community'),
+            url: "/community",
+            icon: Users,
+        },
+        {
+            title: t('navigation.expert'),
+            url: "/contact-to-expert",
+            icon: User2,
+        },
+        {
+            title: t('navigation.setting'),
+            url: "#",
+            icon: Settings,
+        },
+    ]
+
     return (
         <Sidebar>
             <SidebarHeader>
                 <div className='p-4'>
-                    <Image src={'/logo.png'} alt='logo' width={100} height={100}
-                        className='w-full h-full' />
-                    {/* <h2 className='text-sm text-gray-400 text-center'>Build Awesome</h2> */}
+                    <Image 
+                        src={'/logo.png'} 
+                        alt={t('logo.alt')} 
+                        width={100} 
+                        height={100}
+                        className='w-full h-full' 
+                    />
                 </div>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-
                     <SidebarGroupContent>
                         <SidebarMenu className='mt-5'>
                             {items.map((item, index) => (
-                                // <SidebarMenuItem key={item.title} className='p-2'>
-                                //     <SidebarMenuButton asChild className=''>
-                                <a href={item.url} key={index} className={`p-2 text-lg flex gap-2 items-center
-                                 hover:bg-gray-100 rounded-lg ${path.includes(item.url) && 'bg-gray-200ß'}`}>
+                                <a 
+                                    href={item.url} 
+                                    key={index} 
+                                    className={`p-2 text-lg flex gap-2 items-center hover:bg-gray-100 rounded-lg ${path.includes(item.url) && 'bg-gray-200'}`}
+                                >
                                     <item.icon className='h-5 w-5' />
                                     <span>{item.title}</span>
                                 </a>
-                                //     </SidebarMenuButton>
-                                // </SidebarMenuItem>
                             ))}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
-            
         </Sidebar>
     )
 }

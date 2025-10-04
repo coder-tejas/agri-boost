@@ -337,5 +337,15 @@
     }
   },
 
-  "sidebar": {}
-}
+ "sidebar": {
+    "navigation": {
+      "cropAnalysis": "फसल विश्लेषण",
+      "chatbotAssistant": "चैटबॉट सहायक",
+      "community": "समुदाय",
+      "expert": "विशेषज्ञ",
+      "setting": "सेटिंग"
+    },
+    "logo": {
+      "alt": "लोगो"
+    }
+  }}

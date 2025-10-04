@@ -337,5 +337,15 @@
     }
   },
 
-  "sidebar": {}
-}
+"sidebar": {
+    "navigation": {
+      "cropAnalysis": "ଫସଲ ବିଶ୍ଳେଷଣ",
+      "chatbotAssistant": "ଚାଟବଟ୍ ସହାୟକ",
+      "community": "ସମ୍ପ୍ରଦାୟ",
+      "expert": "ବିଶେଷଜ୍ଞ",
+      "setting": "ସେଟିଂ"
+    },
+    "logo": {
+      "alt": "ଲୋଗୋ"
+    }
+  }}
