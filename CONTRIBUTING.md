@@ -26,6 +26,6 @@ Thank you for your interest in contributing! Please follow these guidelines to h
 4. **Contact to Expert**
 5. **Crop Care Calendar**
 6. **Pop-up Notifications for Crop Care**
-7. **30+ Language Support**
+7. ~**30+ Language Support**~ DONE ✔️
 
 We appreciate your contributions!
