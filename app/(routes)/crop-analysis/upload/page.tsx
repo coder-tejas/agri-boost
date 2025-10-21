@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -11,139 +11,101 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Upload, FileText, X, CheckCircle } from "lucide-react";
+import { ArrowLeft, Upload } from "lucide-react";
 import AppHeader from "@/app/_components/AppHeader";
-
-// Simple stepper for progress indication
-const Stepper = ({ activeIndex }: { activeIndex: number }) => {
-  const t = useTranslations("crop-analysis.upload.stepper");
-  const steps = [
-    { label: t("step1") },
-    { label: t("step2") },
-    { label: t("step3") },
-  ];
-  return (
-    <div className="mb-6 md:mb-8">
-      {/* Desktop/Tablet Stepper */}
-      <div className="hidden sm:block">
-        <div className="flex items-center justify-between mb-4">
-          {steps.map((step, idx) => (
-            <div
-              key={step.label}
-              className={`flex items-center space-x-2 ${
-                idx > activeIndex ? "opacity-50" : ""
-              }`}
-            >
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-                  idx === activeIndex
-                    ? "bg-gradient-to-br from-primary-500 to-secondary-600 text-white"
-                    : "bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-400"
-                }`}
-              >
-                {idx + 1}
-              </div>
-              <span
-                className={`font-semibold text-sm md:text-base ${
-                  idx === activeIndex
-                    ? "text-primary-600 dark:text-primary-400"
-                    : "text-neutral-500 dark:text-neutral-400"
-                }`}
-              >
-                {step.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-      
-      {/* Mobile Stepper */}
-      <div className="sm:hidden">
-        <div className="flex items-center justify-center mb-3">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center font-semibold bg-gradient-to-br from-primary-500 to-secondary-600 text-white">
-              {activeIndex + 1}
-            </div>
-            <span className="font-semibold text-primary-600 dark:text-primary-400">
-              {steps[activeIndex].label}
-            </span>
-          </div>
-        </div>
-        <div className="text-center text-xs text-neutral-500 dark:text-neutral-400 mb-3">
-          Step {activeIndex + 1} of {steps.length}
-        </div>
-      </div>
-      
-      <Progress
-        value={((activeIndex + 1) / steps.length) * 100}
-        className="h-2"
-      />
-    </div>
-  );
-};
+import { Stepper } from "./_components/Stepper";
+import { CameraModal } from "./_components/CameraModal";
+import { UploadZone } from "./_components/Uploadzone";
+import { UploadedFilesList } from "./_components/UploadedFileList";
+import { useFileUpload } from "@/hooks/useFileUpload";
+import { useRouter } from "next/navigation";
 
 const UploadPage = () => {
   const t = useTranslations("crop-analysis.upload");
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [isDragOver, setIsDragOver] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [showCamera, setShowCamera] = useState(false);
+  const camera = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
-  // Handlers for drag & drop
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  }, []);
+  const {
+    uploadedFiles,
+    isDragOver,
+    uploadProgress,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleFileSelect,
+    removeFile,
+    setUploadedFiles,
+  } = useFileUpload();
 
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  }, []);
+  const handleCapture = async () => {
+    // @ts-ignore
+    const photoBlob = camera.current?.takePhoto();
+    if (!photoBlob) return;
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const files = Array.from(e.dataTransfer.files).filter(
-      (file) => file.type === "application/pdf"
-    );
-    if (files.length > 0) {
-      setUploadedFiles((prev) => [...prev, ...files]);
-      simulateUpload();
-    }
-  }, []);
+    // Convert Blob to File
+    const file = new File([photoBlob], "captured_photo.jpg", { type: "image/jpeg" });
 
-  const handleFileSelect = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(e.target.files || []).filter(
-        (file) => file.type === "application/pdf"
-      );
-      if (files.length > 0) {
-        setUploadedFiles((prev) => [...prev, ...files]);
-        simulateUpload();
-      }
-    },
-    []
-  );
+    // Generate preview URL
+    const preview = URL.createObjectURL(file);
 
-  const simulateUpload = () => {
-    setUploadProgress(0);
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 200);
+    setUploadedFiles((prev) => [
+      ...prev,
+      { file, type: "image", preview },
+    ]);
+
+    setShowCamera(false);
   };
 
-  const removeFile = (index: number) => {
-    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+  const handleImageCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const type = file.type.includes("pdf") ? "pdf" : "image";
+    const preview = URL.createObjectURL(file);
+
+    setUploadedFiles((prev) => [...prev, { file, type, preview }]);
+  };
+
+  const saveFileToLocalStorage = async (file: File): Promise<string> => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result as string;
+        // Clear previous data and save new
+        localStorage.removeItem("USER_SOIL_DATA");
+        localStorage.setItem("USER_SOIL_DATA", base64);
+        resolve(base64);
+      };
+      reader.onerror = (err) => {
+        reject(err);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleClick = async () => {
+    if (uploadedFiles.length === 0) return;
+
+    const firstFile = uploadedFiles[0].file;
+
+    if (!(firstFile instanceof File)) {
+      console.error("Invalid file type, expected File instance");
+      return;
+    }
+
+    try {
+      await saveFileToLocalStorage(firstFile);
+      router.push("/crop-analysis/questionnaire");
+    } catch (err) {
+      console.error("Error saving file to storage:", err);
+    }
   };
 
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-900">
-      {/* Header, navigation, branding */}
+      {/* Header */}
       <AppHeader>
         <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
           <div className="flex items-center justify-center">
@@ -166,6 +128,17 @@ const UploadPage = () => {
           {/* Stepper Component */}
           <Stepper activeIndex={0} />
 
+          {/* Camera Modal */}
+          <CameraModal
+            showCamera={showCamera}
+            cameraRef={camera}
+            uploadedFiles={uploadedFiles}
+            onCapture={handleCapture}
+            onClose={() => setShowCamera(false)}
+            onFileChange={handleImageCapture}
+            fileInputRef={fileInputRef}
+          />
+
           {/* Upload Card */}
           <Card className="mb-6 sm:mb-8 border-neutral-200 dark:border-neutral-700">
             <CardHeader className="px-4 sm:px-6 py-4 sm:py-6">
@@ -176,46 +149,20 @@ const UploadPage = () => {
                 {t("card.description")}
               </CardDescription>
             </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-              <div
-                className={`border-2 border-dashed rounded-lg p-6 sm:p-8 md:p-12 text-center transition-all duration-300 ${
-                  isDragOver
-                    ? "border-primary-500 bg-primary-50 dark:bg-primary-900/10 scale-105"
-                    : "border-neutral-300 dark:border-neutral-600 hover:border-primary-400 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                }`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-              >
-                <Upload className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 text-neutral-400 dark:text-neutral-500 mx-auto mb-3 sm:mb-4" />
-                <h3 className="text-lg sm:text-xl font-semibold mb-2 text-neutral-900 dark:text-white px-2">
-                  {t("dropzone.title")}
-                </h3>
-                <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 mb-4 sm:mb-6 px-2">
-                  {t("dropzone.subtitle")}
-                </p>
-                <input
-                  type="file"
-                  accept=".pdf"
-                  multiple
-                  onChange={handleFileSelect}
-                  className="hidden"
-                  id="file-input"
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
+              {/* Upload Zone */}
+              {uploadedFiles.length === 0 && (
+                <UploadZone
+                  isDragOver={isDragOver}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onFileSelect={handleFileSelect}
+                  onCameraOpen={() => setShowCamera(true)}
                 />
-                <Button
-                  size="lg"
-                  asChild
-                  className="bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white w-full sm:w-auto"
-                >
-                  <label htmlFor="file-input" className="cursor-pointer">
-                    {t("dropzone.browseButton")}
-                  </label>
-                </Button>
-                <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-3 sm:mt-4 px-2">
-                  {t("dropzone.supportedFormats")}
-                </p>
-              </div>
+              )}
 
+              {/* Upload Progress */}
               {uploadProgress > 0 && uploadProgress < 100 && (
                 <div className="mt-4 sm:mt-6">
                   <div className="flex items-center justify-between mb-2">
@@ -223,7 +170,9 @@ const UploadPage = () => {
                       {t("uploadProgress.uploading")}
                     </span>
                     <span className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
-                      {t("uploadProgress.percentage", { percent: uploadProgress })}
+                      {t("uploadProgress.percentage", {
+                        percent: uploadProgress,
+                      })}
                     </span>
                   </div>
                   <Progress value={uploadProgress} className="h-2" />
@@ -233,68 +182,29 @@ const UploadPage = () => {
           </Card>
 
           {/* Uploaded Files List */}
-          {uploadedFiles.length > 0 && (
-            <Card className="mb-6 sm:mb-8 border-neutral-200 dark:border-neutral-700">
-              <CardHeader className="px-4 sm:px-6 py-4 sm:py-6">
-                <CardTitle className="flex items-center text-base sm:text-lg text-neutral-900 dark:text-white">
-                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-success mr-2 flex-shrink-0" />
-                  <span className="break-words">
-                    {t("uploadedFiles.title", { count: uploadedFiles.length })}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-                <div className="space-y-2 sm:space-y-3">
-                  {uploadedFiles.map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-3 sm:p-4 bg-neutral-100 dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 gap-2 sm:gap-3"
-                    >
-                      <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
-                        <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600 dark:text-primary-400 flex-shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <p className="font-medium text-sm sm:text-base text-neutral-900 dark:text-white truncate">
-                            {file.name}
-                          </p>
-                          <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
-                            {t("uploadedFiles.fileSize", { size: (file.size / 1024 / 1024).toFixed(2)  })}
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeFile(index)}
-                        className="hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400 flex-shrink-0"
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          <UploadedFilesList files={uploadedFiles} onRemove={removeFile} />
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between">
-            <Button variant="ghost" size="lg" asChild className="w-full sm:w-auto">
+            <Button
+              variant="ghost"
+              size="lg"
+              asChild
+              className="w-full sm:w-auto"
+            >
               <Link href="/">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 {t("buttons.backToHome")}
               </Link>
             </Button>
-            
-            {/* Next Step Button */}
+
             {uploadedFiles.length > 0 && (
               <Button
                 size="lg"
                 className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
-                asChild
+                onClick={handleClick}
               >
-                <Link href="/crop-analysis/questionnaire">
-                  {t("buttons.continueToQuestionnaire")}
-                </Link>
+                {t("buttons.continueToQuestionnaire")}
               </Button>
             )}
           </div>

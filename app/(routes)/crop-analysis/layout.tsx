@@ -1,4 +1,3 @@
-import AppHeader from '@/app/_components/AppHeader'
 import React from 'react'
 
 function CropAnalysisLayout({children}:{children:React.ReactNode}) {
@@ -8,7 +7,7 @@ function CropAnalysisLayout({children}:{children:React.ReactNode}) {
       {/* <AppHeader> */}
         {/* <h1 className="text-xl font-semibold ml-2">Dashboard</h1> */}
       {/* </AppHeader> */}
-      <main className="p-4">{children}</main>
+      <main className="0">{children}</main>
     </div>
     </>
   )

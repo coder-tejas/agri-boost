@@ -33,7 +33,7 @@ export function AppSidebar() {
         },
         {
             title: t('navigation.community'),
-            url: "/community",
+            url: "https://t.me/Agri_boost",
             icon: Users,
         },
         {

@@ -1,409 +1,110 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, ArrowRight, MapPin, Wheat, Droplets } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Wheat } from "lucide-react";
+import { toast } from "sonner"; // or your toast library
 import AppHeader from "@/app/_components/AppHeader";
+import { useRouter } from "next/navigation";
+import ProgressStepper from "./_components/ProgressStepper";
+import StepProgress from "./_components/StepProgress";
+import StepContent from "./_components/StepContent";
+import NavigationButtons from "./_components/NavigationButton";
+import { FormData } from "./_types/FormSchema";
+import { useFormValidation } from "./_hooks/useFormValidation";
+import axios from "axios";
+import { getRunOutput } from "@/services/GlobalApi";
+
+const TOTAL_STEPS = 4;
 
 const QuestionnairePage = () => {
+  const router = useRouter();
   const t = useTranslations("crop-analysis.questionnaire");
+  const { errors, validateStep, validateForm, clearError } =
+    useFormValidation();
+
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Partial<FormData>>({
     location: "",
     state: "",
     cropType: "",
-    landSize: "",
+    landSize: 0,
     irrigationMethod: "",
     fertilizerUse: "",
     pestIssues: "",
     soilType: "",
-    previousYield: "",
-    targetYield: "",
-    budget: "",
-    additionalInfo: "",
+    previousYield: 0,
+    targetYield: 0,
+    budget: 0,
+    additionalInfoField: "",
   });
 
-  const totalSteps = 4;
-  const progressValue = (currentStep / totalSteps) * 100;
+  const progressValue = (currentStep / TOTAL_STEPS) * 100;
 
-  const updateFormData = (field: string, value: string) => {
+  const updateFormData = (field: keyof FormData, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    clearError(field);
   };
 
-  const nextStep = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep((prev) => prev + 1);
+  const handleNext = () => {
+    // Validate current step before proceeding
+    if (validateStep(currentStep, formData)) {
+      if (currentStep < TOTAL_STEPS) {
+        setCurrentStep((prev) => prev + 1);
+        console.log(currentStep);
+      }
+    } else {
+      toast.error("Please Fill All Fields");
     }
   };
 
-  const prevStep = () => {
+  const handlePrev = () => {
     if (currentStep > 1) {
       setCurrentStep((prev) => prev - 1);
     }
   };
 
-  const renderStep = () => {
-    switch (currentStep) {
-      case 1:
-        return (
-          <Card>
-            <CardHeader className="px-4 sm:px-6">
-              <CardTitle className="flex items-center text-xl sm:text-2xl">
-                <MapPin className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3 text-primary flex-shrink-0" />
-                <span className="break-words">{t("step1.title")}</span>
-              </CardTitle>
-              <CardDescription className="text-base sm:text-lg">
-                {t("step1.description")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="location" className="text-sm sm:text-base font-medium">
-                    {t("step1.fields.location.label")}
-                  </Label>
-                  <Input
-                    id="location"
-                    placeholder={t("step1.fields.location.placeholder")}
-                    value={formData.location}
-                    onChange={(e) => updateFormData("location", e.target.value)}
-                    className="h-10 sm:h-12 text-sm sm:text-base"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="state" className="text-sm sm:text-base font-medium">
-                    {t("step1.fields.state.label")}
-                  </Label>
-                  <Select
-                    value={formData.state}
-                    onValueChange={(value) => updateFormData("state", value)}
-                  >
-                    <SelectTrigger className="h-10 sm:h-12 text-sm sm:text-base">
-                      <SelectValue placeholder={t("step1.fields.state.placeholder")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="punjab">{t("step1.fields.state.options.punjab")}</SelectItem>
-                      <SelectItem value="haryana">{t("step1.fields.state.options.haryana")}</SelectItem>
-                      <SelectItem value="uttar-pradesh">{t("step1.fields.state.options.uttarPradesh")}</SelectItem>
-                      <SelectItem value="maharashtra">{t("step1.fields.state.options.maharashtra")}</SelectItem>
-                      <SelectItem value="gujarat">{t("step1.fields.state.options.gujarat")}</SelectItem>
-                      <SelectItem value="rajasthan">{t("step1.fields.state.options.rajasthan")}</SelectItem>
-                      <SelectItem value="other">{t("step1.fields.state.options.other")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="landSize" className="text-sm sm:text-base font-medium">
-                    {t("step1.fields.landSize.label")}
-                  </Label>
-                  <Input
-                    id="landSize"
-                    type="number"
-                    placeholder={t("step1.fields.landSize.placeholder")}
-                    value={formData.landSize}
-                    onChange={(e) => updateFormData("landSize", e.target.value)}
-                    className="h-10 sm:h-12 text-sm sm:text-base"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="soilType" className="text-sm sm:text-base font-medium">
-                    {t("step1.fields.soilType.label")}
-                  </Label>
-                  <Select
-                    value={formData.soilType}
-                    onValueChange={(value) => updateFormData("soilType", value)}
-                  >
-                    <SelectTrigger className="h-10 sm:h-12 text-sm sm:text-base">
-                      <SelectValue placeholder={t("step1.fields.soilType.placeholder")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="clay">{t("step1.fields.soilType.options.clay")}</SelectItem>
-                      <SelectItem value="sandy">{t("step1.fields.soilType.options.sandy")}</SelectItem>
-                      <SelectItem value="loamy">{t("step1.fields.soilType.options.loamy")}</SelectItem>
-                      <SelectItem value="silty">{t("step1.fields.soilType.options.silty")}</SelectItem>
-                      <SelectItem value="mixed">{t("step1.fields.soilType.options.mixed")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        );
+  const handleSubmit = async () => {
+    // Validate entire form before submission
+    if (validateForm(formData)) {
+      // Form is valid, proceed with submission
+      console.log("Form submitted:", formData);
 
-      case 2:
-        return (
-          <Card>
-            <CardHeader className="px-4 sm:px-6">
-              <CardTitle className="flex items-center text-xl sm:text-2xl">
-                <Wheat className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3 text-crop-green flex-shrink-0" />
-                <span className="break-words">{t("step2.title")}</span>
-              </CardTitle>
-              <CardDescription className="text-base sm:text-lg">
-                {t("step2.description")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="cropType" className="text-sm sm:text-base font-medium">
-                    {t("step2.fields.cropType.label")}
-                  </Label>
-                  <Select
-                    value={formData.cropType}
-                    onValueChange={(value) => updateFormData("cropType", value)}
-                  >
-                    <SelectTrigger className="h-10 sm:h-12 text-sm sm:text-base">
-                      <SelectValue placeholder={t("step2.fields.cropType.placeholder")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="wheat">{t("step2.fields.cropType.options.wheat")}</SelectItem>
-                      <SelectItem value="rice">{t("step2.fields.cropType.options.rice")}</SelectItem>
-                      <SelectItem value="corn">{t("step2.fields.cropType.options.corn")}</SelectItem>
-                      <SelectItem value="cotton">{t("step2.fields.cropType.options.cotton")}</SelectItem>
-                      <SelectItem value="sugarcane">{t("step2.fields.cropType.options.sugarcane")}</SelectItem>
-                      <SelectItem value="soybeans">{t("step2.fields.cropType.options.soybeans")}</SelectItem>
-                      <SelectItem value="vegetables">{t("step2.fields.cropType.options.vegetables")}</SelectItem>
-                      <SelectItem value="fruits">{t("step2.fields.cropType.options.fruits")}</SelectItem>
-                      <SelectItem value="other">{t("step2.fields.cropType.options.other")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="previousYield"
-                    className="text-sm sm:text-base font-medium"
-                  >
-                    {t("step2.fields.previousYield.label")}
-                  </Label>
-                  <Input
-                    id="previousYield"
-                    placeholder={t("step2.fields.previousYield.placeholder")}
-                    value={formData.previousYield}
-                    onChange={(e) =>
-                      updateFormData("previousYield", e.target.value)
-                    }
-                    className="h-10 sm:h-12 text-sm sm:text-base"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="targetYield"
-                    className="text-sm sm:text-base font-medium"
-                  >
-                    {t("step2.fields.targetYield.label")}
-                  </Label>
-                  <Input
-                    id="targetYield"
-                    placeholder={t("step2.fields.targetYield.placeholder")}
-                    value={formData.targetYield}
-                    onChange={(e) =>
-                      updateFormData("targetYield", e.target.value)
-                    }
-                    className="h-10 sm:h-12 text-sm sm:text-base"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="budget" className="text-sm sm:text-base font-medium">
-                    {t("step2.fields.budget.label")}
-                  </Label>
-                  <Input
-                    id="budget"
-                    type="number"
-                    placeholder={t("step2.fields.budget.placeholder")}
-                    value={formData.budget}
-                    onChange={(e) => updateFormData("budget", e.target.value)}
-                    className="h-10 sm:h-12 text-sm sm:text-base"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        );
-
-      case 3:
-        return (
-          <Card>
-            <CardHeader className="px-4 sm:px-6">
-              <CardTitle className="flex items-center text-xl sm:text-2xl">
-                <Droplets className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3 text-blue-500 flex-shrink-0" />
-                <span className="break-words">{t("step3.title")}</span>
-              </CardTitle>
-              <CardDescription className="text-base sm:text-lg">
-                {t("step3.description")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="irrigationMethod"
-                    className="text-sm sm:text-base font-medium"
-                  >
-                    {t("step3.fields.irrigationMethod.label")}
-                  </Label>
-                  <Select
-                    value={formData.irrigationMethod}
-                    onValueChange={(value) =>
-                      updateFormData("irrigationMethod", value)
-                    }
-                  >
-                    <SelectTrigger className="h-10 sm:h-12 text-sm sm:text-base">
-                      <SelectValue placeholder={t("step3.fields.irrigationMethod.placeholder")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="drip">{t("step3.fields.irrigationMethod.options.drip")}</SelectItem>
-                      <SelectItem value="sprinkler">{t("step3.fields.irrigationMethod.options.sprinkler")}</SelectItem>
-                      <SelectItem value="flood">{t("step3.fields.irrigationMethod.options.flood")}</SelectItem>
-                      <SelectItem value="furrow">{t("step3.fields.irrigationMethod.options.furrow")}</SelectItem>
-                      <SelectItem value="rainfed">{t("step3.fields.irrigationMethod.options.rainfed")}</SelectItem>
-                      <SelectItem value="mixed">{t("step3.fields.irrigationMethod.options.mixed")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="fertilizerUse"
-                    className="text-sm sm:text-base font-medium"
-                  >
-                    {t("step3.fields.fertilizerUse.label")}
-                  </Label>
-                  <Select
-                    value={formData.fertilizerUse}
-                    onValueChange={(value) =>
-                      updateFormData("fertilizerUse", value)
-                    }
-                  >
-                    <SelectTrigger className="h-10 sm:h-12 text-sm sm:text-base">
-                      <SelectValue placeholder={t("step3.fields.fertilizerUse.placeholder")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="organic">{t("step3.fields.fertilizerUse.options.organic")}</SelectItem>
-                      <SelectItem value="chemical">{t("step3.fields.fertilizerUse.options.chemical")}</SelectItem>
-                      <SelectItem value="mixed">{t("step3.fields.fertilizerUse.options.mixed")}</SelectItem>
-                      <SelectItem value="minimal">{t("step3.fields.fertilizerUse.options.minimal")}</SelectItem>
-                      <SelectItem value="none">{t("step3.fields.fertilizerUse.options.none")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="pestIssues" className="text-sm sm:text-base font-medium">
-                  {t("step3.fields.pestIssues.label")}
-                </Label>
-                <Textarea
-                  id="pestIssues"
-                  placeholder={t("step3.fields.pestIssues.placeholder")}
-                  value={formData.pestIssues}
-                  onChange={(e) => updateFormData("pestIssues", e.target.value)}
-                  className="min-h-20 sm:min-h-24 text-sm sm:text-base"
-                />
-              </div>
-            </CardContent>
-          </Card>
-        );
-
-      case 4:
-        return (
-          <Card>
-            <CardHeader className="px-4 sm:px-6">
-              <CardTitle className="text-xl sm:text-2xl">
-                {t("step4.title")}
-              </CardTitle>
-              <CardDescription className="text-base sm:text-lg">
-                {t("step4.description")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
-              <div className="space-y-2">
-                <Label
-                  htmlFor="additionalInfo"
-                  className="text-sm sm:text-base font-medium"
-                >
-                  {t("step4.fields.additionalInfo.label")}
-                </Label>
-                <Textarea
-                  id="additionalInfo"
-                  placeholder={t("step4.fields.additionalInfo.placeholder")}
-                  value={formData.additionalInfo}
-                  onChange={(e) =>
-                    updateFormData("additionalInfo", e.target.value)
-                  }
-                  className="min-h-24 sm:min-h-32 text-sm sm:text-base"
-                />
-              </div>
-
-              <div className="bg-accent p-4 sm:p-6 rounded-lg">
-                <h4 className="font-semibold text-base sm:text-lg text-accent-foreground mb-3">
-                  {t("step4.summary.title")}
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
-                  <div className="space-y-2">
-                    <p className="break-words">
-                      <strong>{t("step4.summary.location")}:</strong> {formData.location},{" "}
-                      {formData.state}
-                    </p>
-                    <p>
-                      <strong>{t("step4.summary.landSize")}:</strong> {formData.landSize} {t("step4.summary.acres")}
-                    </p>
-                    <p>
-                      <strong>{t("step4.summary.cropType")}:</strong> {formData.cropType}
-                    </p>
-                    <p>
-                      <strong>{t("step4.summary.soilType")}:</strong> {formData.soilType}
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <p>
-                      <strong>{t("step4.summary.irrigation")}:</strong> {formData.irrigationMethod}
-                    </p>
-                    <p>
-                      <strong>{t("step4.summary.fertilizerUse")}:</strong> {formData.fertilizerUse}
-                    </p>
-                    <p>
-                      <strong>{t("step4.summary.targetYield")}:</strong> {formData.targetYield}
-                    </p>
-                    <p className="break-words">
-                      <strong>{t("step4.summary.budget")}:</strong> ₹{formData.budget}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        );
-
-      default:
-        return null;
+      const getData = localStorage.getItem("USER_OTHER_DATA");
+      if (getData !== null) {
+        localStorage.removeItem("USER_OTHER_DATA");
+      }
+      const userFormData: Partial<FormData> = formData;
+      const userDataString = JSON.stringify(userFormData);
+      localStorage.setItem("USER_OTHER_DATA", userDataString);
+      // const getSoilData = localStorage.getItem("USER_SOIL_DATA");
+      // const soil_data = getSoilData?.replace(/^data:image\/\w+;base64,/, "");
+      router.push("/crop-analysis/result");
+      // Navigate to results page or submit to API
+      // const result = await axios.post("/api/results", {
+      //   soil_test_data: soil_data,
+      //   other_data: userDataString,
+      // });
+      // const jobid = result.data.jobId;
+      // console.log("Got Gob Id : ", result.data.jobId);
+      // if (!jobid) {
+      //   throw new Error("NO job id received");
+      // }
+      // console.log("🔄 Job started with ID:", jobid);
+      // try {
+      //   const completedRun = await getRunOutput(jobid);
+      //   console.log("Task Completed -> ", completedRun.output);
+      // } catch (err) {
+      //   console.error("Error in polling ");
+      // }
+    } else {
+      toast.error(t("validation.pleaseCompleteAllFields"));
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
       <AppHeader>
-        {/* Header */}
         <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
           <div className="flex items-center justify-center">
             <div className="flex items-center space-x-2">
@@ -420,104 +121,30 @@ const QuestionnairePage = () => {
 
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         <div className="max-w-4xl mx-auto">
-          {/* Progress Steps - Desktop/Tablet */}
-          <div className="mb-6 sm:mb-8 hidden sm:block">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-2 opacity-50">
-                <div className="w-8 h-8 bg-crop-green rounded-full flex items-center justify-center bg-primary-400 text-white font-semibold">
-                  ✓
-                </div>
-                <span className="text-green-800 font-semibold text-sm md:text-base">
-                  {t("stepper.uploadComplete")}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold">
-                  2
-                </div>
-                <span className="font-semibold text-primary text-sm md:text-base">
-                  {t("stepper.fillQuestionnaire")}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2 opacity-50">
-                <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center text-muted-foreground font-semibold">
-                  3
-                </div>
-                <span className="text-muted-foreground text-sm md:text-base">{t("stepper.getResults")}</span>
-              </div>
-            </div>
-            <Progress value={66} className="h-2" />
+          <ProgressStepper currentStep={2} />
+
+          <StepProgress
+            currentStep={currentStep}
+            totalSteps={TOTAL_STEPS}
+            progressValue={progressValue}
+          />
+
+          <div className="mb-6 sm:mb-8">
+            <StepContent
+              currentStep={currentStep}
+              formData={formData}
+              updateFormData={updateFormData}
+              errors={errors}
+            />
           </div>
 
-          {/* Progress Steps - Mobile */}
-          <div className="mb-4 sm:hidden">
-            <div className="flex items-center justify-center mb-3">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold">
-                  2
-                </div>
-                <span className="font-semibold text-primary">
-                  {t("stepper.fillQuestionnaire")}
-                </span>
-              </div>
-            </div>
-            <div className="text-center text-xs text-muted-foreground mb-3">
-              Step 2 of 3
-            </div>
-            <Progress value={66} className="h-2" />
-          </div>
-
-          {/* Step Progress */}
-          <div className="mb-4 sm:mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs sm:text-sm font-medium text-foreground">
-                {t("progress.stepOf", { current: currentStep, total: totalSteps })}
-              </span>
-              <span className="text-xs sm:text-sm text-muted-foreground">
-                {t("progress.percentComplete", { percent: Math.round(progressValue) })}
-              </span>
-            </div>
-            <Progress value={progressValue} className="h-2" />
-          </div>
-
-          {/* Current Step Content */}
-          <div className="mb-6 sm:mb-8">{renderStep()}</div>
-
-          {/* Navigation - Mobile Stack */}
-          <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={prevStep}
-              disabled={currentStep === 1}
-              className="text-base sm:text-lg px-4 sm:px-6 py-2 sm:py-3 w-full sm:w-auto order-2 sm:order-1"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {t("buttons.previous")}
-            </Button>
-            <Button variant="ghost" size="lg" asChild className="w-full sm:w-auto order-3 sm:order-2">
-              <Link href="/crop-analysis/upload" className="text-sm sm:text-base">
-                {t("buttons.backToUpload")}
-              </Link>
-            </Button>
-            {currentStep === totalSteps ? (
-              <Button size="lg" className="text-base sm:text-lg px-6 sm:px-8 py-2 sm:py-3 w-full sm:w-auto order-1 sm:order-3" asChild>
-                <Link href="/crop-analysis/result">
-                  {t("buttons.submit")}
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
-              </Button>
-            ) : (
-              <Button
-                size="lg"
-                onClick={nextStep}
-                className="text-base sm:text-lg px-6 sm:px-8 py-2 sm:py-3 w-full sm:w-auto order-1 sm:order-3"
-              >
-                {t("buttons.next")}
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            )}
-          </div>
+          <NavigationButtons
+            currentStep={currentStep}
+            totalSteps={TOTAL_STEPS}
+            onNext={handleNext}
+            onPrev={handlePrev}
+            onSubmit={handleSubmit}
+          />
         </div>
       </div>
     </div>

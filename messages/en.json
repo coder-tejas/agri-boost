@@ -91,13 +91,13 @@
       },
       "card": {
         "title": "Upload Your Soil Test Report",
-        "description": "Upload your PDF soil test reports to get personalized crop recommendations."
+        "description": "Upload your PDF or Image soil test reports to get personalized crop recommendations."
       },
       "dropzone": {
         "title": "Drag and drop your files here",
-        "subtitle": "or click below to browse your computer",
+        "subtitle": "or click below to browse your device",
         "browseButton": "Browse Files",
-        "supportedFormats": "Supports: PDF files only"
+        "supportedFormats": "Supports: PDF or Image files only"
       },
       "uploadProgress": {
         "uploading": "Uploading...",
@@ -110,6 +110,14 @@
       "buttons": {
         "backToHome": "Back to Home",
         "continueToQuestionnaire": "Continue to Questionnaire"
+      },
+      "camera": {
+        "title": "Capture with Camera",
+        "subtitle": "Take photos of your documents"
+      },
+      "fileUpload": {
+        "title": "Upload Files",
+        "subtitle": "Choose PDF or image files"
       }
     },
 
