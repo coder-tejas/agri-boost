@@ -7,7 +7,10 @@ import { userSoilAnalysis } from "@/configs/schema";
 import moment from "moment";
 dotenv.config();
 
-const ai = new GoogleGenAI({})
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+  // apiEndpoint: "https://asia-south1-aiplatform.googleapis.com"
+});
 
 export const GenerateCropYeild = inngest.createFunction(
   { id: "ai/generate-crop-yeild" },

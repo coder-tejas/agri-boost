@@ -11,9 +11,6 @@ import StepContent from "./_components/StepContent";
 import NavigationButtons from "./_components/NavigationButton";
 import { FormData } from "./_types/FormSchema";
 import { useFormValidation } from "./_hooks/useFormValidation";
-import axios from "axios";
-import { getRunOutput } from "@/services/GlobalApi";
-
 const TOTAL_STEPS = 4;
 
 const QuestionnairePage = () => {
