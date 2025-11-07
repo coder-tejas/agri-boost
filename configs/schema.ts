@@ -13,6 +13,6 @@ export const userSoilAnalysis = pgTable("userSoilAnalysis",{
     createdOn:varchar(),
     userEmail:varchar().references(()=>usersTable.email)
 })
-export const userChatHistory = pgTable("userChatHistory",{
+// export const userChatHistory = pgTable("userChatHistory",{
     
-})
+// })
