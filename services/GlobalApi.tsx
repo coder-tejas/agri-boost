@@ -6,7 +6,7 @@ export const RunStatus = async (eventId: string) => {
       throw new Error("Invalid eventId provided");
     }
 
-    const url = `http://172.19.90.74:8288/v1/events/${eventId}/runs`;
+    const url = `https://api.inngest.com/v1/events/${eventId}/runs`;
     console.log("📡 Making request to:", url);
 
     const myHeaders = new Headers();
