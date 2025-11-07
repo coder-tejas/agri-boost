@@ -10,7 +10,7 @@ export const RunStatus = async (eventId: string) => {
     console.log("📡 Making request to:", url);
 
     const myHeaders = new Headers();
-    myHeaders.append("Authorization", "Bearer local.dev");
+    myHeaders.append("Authorization", `Bearer ${process.env.NEXT_PUBLIC_INNGEST_SIGNING_KEY!}`);
 
     const requestOptions: RequestInit = {
       method: "GET",
