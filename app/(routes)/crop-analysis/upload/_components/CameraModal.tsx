@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 
 interface CameraProps {
   errorMessages?: {
-    required?: string;
-    invalid?: string;
+    noCameraAccessible?: string;
+    permissionDenied?: string;
+    switchCamera?: string;
+    canvas?: string;
   };
 }
 
@@ -25,7 +27,15 @@ interface CameraModalProps {
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   fileInputRef: RefObject<HTMLInputElement | null>;
 }
-
+const CameraErrors: CameraProps["errorMessages"] = {
+  noCameraAccessible:
+    "No camera device accessible. Please connect your camera or try a different browser.",
+  permissionDenied:
+    "Permission denied. Please refresh and give camera permission.",
+  switchCamera:
+    "It is not possible to switch camera to different one because there is only one video device accessible.",
+  canvas: "Canvas is not supported.",
+};
 export const CameraModal = ({
   showCamera,
   cameraRef,
@@ -40,7 +50,11 @@ export const CameraModal = ({
   return (
     <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4">
       <div className="relative w-full max-w-2xl">
-        <CameraLens ref={cameraRef} aspectRatio={16 / 9} />
+        <CameraLens
+          ref={cameraRef}
+          aspectRatio={16 / 9}
+          errorMessages={CameraErrors}
+        />
         <input
           type="file"
           accept="image/*,application/pdf"

@@ -23,7 +23,15 @@ export async function POST(req: Request) {
 
     await browser.close();
 
-    return new NextResponse(pdfBuffer, {
+    const arrayBuffer: ArrayBuffer =
+      pdfBuffer instanceof ArrayBuffer
+        ? pdfBuffer
+        : (pdfBuffer.buffer as ArrayBuffer).slice(
+            pdfBuffer.byteOffset,
+            pdfBuffer.byteOffset + pdfBuffer.byteLength
+          );
+
+    return new NextResponse(arrayBuffer, {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
@@ -38,4 +46,3 @@ export async function POST(req: Request) {
     );
   }
 }
-

@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import { FormData } from "../_types/FormSchema";
 
 interface FormSummaryProps {
-  formData: FormData;
+  formData: Partial<FormData>;
 }
 
 const FormSummary = ({ formData }: FormSummaryProps) => {
