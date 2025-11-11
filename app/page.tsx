@@ -2,10 +2,37 @@
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import LanguageSelector from "./_components/LanguageSelector";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
   const { user } = useUser();
   const t = useTranslations("landing");
+  const [redirect, setRedirect] = useState("/crop-analysis/upload");
+
+useEffect(() => {
+  const checkAnalysisData = async () => {
+    try {
+      const analysisData = localStorage.getItem("ANALYSIS_RESULT");
+
+      if (analysisData) {
+        setRedirect("/crop-analysis/result");
+        return;
+      }
+
+      const res = await fetch("/api/saved-data");
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Object.keys(data).length > 0) {
+          setRedirect("/crop-analysis/result");
+        }
+      }
+    } catch (error) {
+      console.error("Error checking analysis data:", error);
+    }
+  };
+
+  checkAnalysisData();
+}, []);
 
   return (
     <div className="bg-white dark:bg-neutral-900">
@@ -81,7 +108,7 @@ export default function Home() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <a
-                href="/crop-analysis/upload"
+                href={redirect}
                 className="px-8 py-4 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl hover:from-primary-700 hover:to-secondary-700 transition-all font-semibold shadow-lg hover:shadow-xl flex items-center gap-2 text-lg"
               >
                 {t("hero.cta.primary")}

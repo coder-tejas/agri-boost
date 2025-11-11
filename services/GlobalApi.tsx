@@ -41,9 +41,8 @@ export async function getRunOutput(eventId: string) {
   console.log("🔄 Starting to poll for job completion:", eventId);
 
   let attempts = 0;
-  const maxAttempts = 80; // 🔥 Poll for ~10 seconds
-  const delay = 1000; // 1 second between attempts
-
+  const maxAttempts = 80; 
+  const delay = 1000; 
   while (attempts < maxAttempts) {
     attempts++;
     console.log(`🔄 Polling attempt ${attempts}/${maxAttempts} for eventId:`, eventId);

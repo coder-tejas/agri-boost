@@ -72,6 +72,22 @@ const ResultsPage = () => {
       console.error("Error downloading PDF:", error);
     }
   }
+async function delete_analysis_data() {
+  try {
+    const res = await axios.delete("/api/saved-data");
+    if (res.status !== 200) {
+      console.warn("⚠️ Backend failed to reset data");
+      return;
+    }
+    localStorage.removeItem("ANALYSIS_RESULT");
+    localStorage.removeItem("USER_SOIL_DATA");
+    localStorage.removeItem("USER_OTHER_DATA");
+
+    router.push("/crop-analysis/upload");
+  } catch (err) {
+    console.error("❌ Error resetting analysis data:", err.message || err);
+  }
+}
 
 useEffect(() => {
   const fetchAnalysisData = async () => {
@@ -193,15 +209,6 @@ useEffect(() => {
 
         <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
           <div className="max-w-6xl mx-auto">
-            <div className="mb-6 sm:mb-8">
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-green-500 to-blue-500 animate-pulse"
-                  style={{ width: "66%" }}
-                />
-              </div>
-            </div>
-
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <ShimmerCard />
               <ShimmerCard />
@@ -643,14 +650,9 @@ useEffect(() => {
                   variant="outline"
                   size="lg"
                   className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 border-2 border-green-600 text-green-700 hover:bg-green-50 w-full sm:w-auto"
-                  asChild
-                  onClick={() => {
-                    localStorage.removeItem("ANALYSIS_RESULT");
-                    localStorage.removeItem("USER_SOIL_DATA");
-                    localStorage.removeItem("USER_OTHER_DATA");
-                  }}
+                  onClick={delete_analysis_data}
                 >
-                  <Link href="/crop-analysis/upload">New Analysis</Link>
+                  New Analysis
                 </Button>
               </div>
             </div>

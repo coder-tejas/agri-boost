@@ -6,9 +6,12 @@ export async function POST(req: NextRequest) {
   try {
     console.log("Received Req For Result");
     const body = await req.json();
+    console.log("body received = ",body);
+    
     const soil_test_data = body.soil_test_data;
     const other_data = body.other_data;
     const user = await currentUser();
+    console.log("current user = ",user);
     if (!soil_test_data || !other_data) {
       return NextResponse.json(
         { error: "Missing soil test or other data" },
