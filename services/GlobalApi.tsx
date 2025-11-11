@@ -6,7 +6,7 @@ export const RunStatus = async (eventId: string) => {
       throw new Error("Invalid eventId provided");
     }
 
-    const url = `api/inngest/${eventId}`;
+    const url = `/api/inngest/?runid=${eventId}`;
     console.log("📡 Making request to:", url);
 
     const myHeaders = new Headers();
