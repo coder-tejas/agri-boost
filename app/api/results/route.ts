@@ -31,6 +31,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ jobId: result.ids[0] });
   } catch (error) {
     console.error("Error in AI Result generation API:", error);
+    console.error("Test error:", {
+      message: error.message,
+      cause: error.cause,
+      stack: error.stack,
+    });
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
