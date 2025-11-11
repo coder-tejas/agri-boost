@@ -1,12 +1,12 @@
-// app/api/inngest/status/[runId]/route.ts
+
 import { NextRequest } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { runId: string } }
+  context: { params: Promise<{ runId: string }> }
 ) {
   try {
-    const { runId } = params;
+    const { runId } = await context.params;
     
     const response = await fetch(
       `https://api.inngest.com/v1/events/${runId}/runs`,
