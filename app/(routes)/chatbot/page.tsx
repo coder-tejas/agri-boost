@@ -1,63 +1,64 @@
-'use client';
+"use client";
 
-import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Wheat } from 'lucide-react';
-import AppHeader from '@/app/_components/AppHeader';
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
+import React, { useState, useRef, useEffect } from "react";
+import { Send, Wheat } from "lucide-react";
+import AppHeader from "@/app/_components/AppHeader";
+import ReactMarkdown from "react-markdown";
 
-export default function Page() {  
+export default function Page() {
   const [farmerData, setFarmerData] = useState<string>("");
   const [analysisData, setAnalysisData] = useState<string>("");
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-  const [locale,setLocale] = useState<string>("en")
+  const [locale, setLocale] = useState<string>("en");
   useEffect(() => {
     const p = localStorage.getItem("USER_OTHER_DATA");
     const q = localStorage.getItem("ANALYSIS_RESULT");
-    const l = 
     setFarmerData(p || "");
     setAnalysisData(q || "");
     setIsDataLoaded(true);
   }, []); // Empty dependency array - runs only once
-  
+
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
-      api: '/api/chat',
-      
+      api: "/api/chat",
     }),
-
   });
-  
-  const [input, setInput] = useState('');
+
+  const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
+
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-  
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!farmerData || !analysisData) {
       alert("DO CROP ANALYSIS FIRST TO CONTINUE");
       return;
     }
 
     if (input.trim()) {
-      sendMessage({ text: input },{
-        body: {
-        farmerData: farmerData,
-        analysisData: analysisData
-      }
-      });
-      setInput('');
+      sendMessage(
+        { text: input },
+        {
+          body: {
+            farmerData: farmerData,
+            analysisData: analysisData,
+          },
+        },
+      );
+      setInput("");
     }
   };
-  
+
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100">
       {/* Header - Using AppHeader component */}
@@ -92,39 +93,45 @@ export default function Page() {
               </p>
             </div>
           )}
-          
-          {messages.map(message => (
+
+          {messages.map((message) => (
             <div
               key={message.id}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}
+              className={`flex ${
+                message.role === "user" ? "justify-end" : "justify-start"
+              } animate-in fade-in slide-in-from-bottom-2 duration-300`}
             >
               <div
                 className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 sm:px-5 py-3 shadow-sm ${
-                  message.role === 'user'
-                    ? 'bg-gradient-to-br from-primary-600 to-primary-700 text-white'
-                    : 'bg-white border border-neutral-200 text-neutral-800'
+                  message.role === "user"
+                    ? "bg-gradient-to-br from-primary-600 to-primary-700 text-white"
+                    : "bg-white border border-neutral-200 text-neutral-800"
                 }`}
               >
-                {message.role === 'assistant' && (
+                {message.role === "assistant" && (
                   <div className="flex items-center gap-2 mb-2">
                     <div className="bg-primary-100 p-1.5 rounded-lg">
                       <Wheat className="w-4 h-4 text-primary-600" />
                     </div>
-                    <span className="text-xs font-semibold text-primary-700">AgriBot</span>
+                    <span className="text-xs font-semibold text-primary-700">
+                      AgriBot
+                    </span>
                   </div>
                 )}
                 <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-base">
                   {message.parts.map((part, index) =>
-                    part.type === 'text' ? (
-                      <span key={index}>{part.text}</span>
-                    ) : null
+                    part.type === "text" ? (
+                      <span key={index}>
+                        <ReactMarkdown>{part.text}</ReactMarkdown>
+                      </span>
+                    ) : null,
                   )}
                 </div>
               </div>
             </div>
           ))}
-          
-          {status === 'streaming' && (
+
+          {status === "streaming" && (
             <div className="flex justify-start">
               <div className="bg-white border border-neutral-200 rounded-2xl px-4 sm:px-5 py-3 shadow-sm">
                 <div className="flex items-center gap-2">
@@ -132,15 +139,24 @@ export default function Page() {
                     <Wheat className="w-4 h-4 text-primary-600" />
                   </div>
                   <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-primary-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                    <div className="w-2 h-2 bg-primary-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                    <div className="w-2 h-2 bg-primary-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    <div
+                      className="w-2 h-2 bg-primary-600 rounded-full animate-bounce"
+                      style={{ animationDelay: "0ms" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-primary-600 rounded-full animate-bounce"
+                      style={{ animationDelay: "150ms" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-primary-600 rounded-full animate-bounce"
+                      style={{ animationDelay: "300ms" }}
+                    ></div>
                   </div>
                 </div>
               </div>
             </div>
           )}
-          
+
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -151,23 +167,23 @@ export default function Page() {
           <div className="flex gap-2 sm:gap-3">
             <input
               value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter' && !e.shiftKey) {
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   handleSubmit(e);
                 }
               }}
-              disabled={status === 'streaming'}
+              disabled={status === "streaming"}
               placeholder="Ask about crops, soil, weather..."
               className="flex-1 px-4 sm:px-5 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-neutral-200 rounded-full focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all disabled:bg-neutral-50 disabled:cursor-not-allowed"
             />
-            <button 
+            <button
               onClick={handleSubmit}
-              disabled={status === 'streaming' || !input.trim()}
+              disabled={status === "streaming" || !input.trim()}
               className="px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-full hover:from-primary-700 hover:to-primary-800 disabled:from-neutral-300 disabled:to-neutral-400 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 font-medium text-sm sm:text-base"
             >
-              {status === 'streaming' ? (
+              {status === "streaming" ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   <span className="hidden sm:inline">Sending</span>
@@ -181,7 +197,8 @@ export default function Page() {
             </button>
           </div>
           <p className="text-xs text-neutral-500 text-center mt-3">
-            AgriBot can provide information about agriculture and farming practices
+            AgriBot can provide information about agriculture and farming
+            practices
           </p>
         </div>
       </div>

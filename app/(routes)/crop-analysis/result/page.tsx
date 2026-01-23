@@ -91,101 +91,100 @@ async function delete_analysis_data() {
 
 useEffect(() => {
   const fetchAnalysisData = async () => {
-    if (hasFetchedRef.current) return;
+    if (hasFetchedRef.current) {
+      console.log("[ResultsPage] Fetch already executed, skipping");
+      return;
+    }
     hasFetchedRef.current = true;
 
+    console.log("[ResultsPage] Starting analysis data pipeline");
     setIsLoading(true);
 
-    const parseJsonSafely = (text) => {
-      if (!text || text === "undefined" || text === "null") return null;
-      try {
-        const cleaned = text
-          .replace(/```json\n?/g, "")
-          .replace(/```\n?/g, "")
-          .trim();
-        return JSON.parse(cleaned);
-      } catch (err) {
-        console.error("❌ JSON parse failed:", err, "Input:", text);
-        return null;
-      }
-    };
-
     try {
-      // 1️⃣ Check cache
+      // 1. Cache
       const cached = localStorage.getItem("ANALYSIS_RESULT");
-      if (cached && cached !== "undefined" && cached !== "null") {
-        console.log("✅ Loaded cached analysis data");
+      if (cached) {
+        console.log("[ResultsPage] Loaded analysis from local cache");
         setAnalysisData(JSON.parse(cached));
         return;
       }
 
-      // 2️⃣ Fetch saved data from API
+      console.log("[ResultsPage] No cache found, checking server");
+
+      // 2. Server saved result
       const savedRes = await fetch("/api/saved-data");
       const savedData = await savedRes.json();
 
       if (Array.isArray(savedData) && savedData.length > 0) {
-        const first = savedData[0];
-
-        // Safely extract text field
-        const textContent =
-          first?.SoilAnaysisData?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-        const parsed =
-          typeof textContent === "string" ? parseJsonSafely(textContent) : null;
-
-        if (parsed) {
-          console.log("✅ Loaded parsed analysis data from saved-data");
-          localStorage.setItem("ANALYSIS_RESULT", JSON.stringify(parsed));
-          setAnalysisData(parsed);
+        const analysis = savedData[0]?.analysis;
+        if (analysis) {
+          console.log("[ResultsPage] Loaded normalized analysis from server");
+          localStorage.setItem("ANALYSIS_RESULT", JSON.stringify(analysis));
+          setAnalysisData(analysis);
           return;
         }
       }
 
-      // 3️⃣ Fallback to local data
+      console.log("[ResultsPage] No stored analysis found, triggering new run");
+
+      // 3. Trigger new run
       const userData = localStorage.getItem("USER_OTHER_DATA");
       const soilData = localStorage.getItem("USER_SOIL_DATA");
 
       if (!userData || !soilData) {
-        throw new Error("⚠️ Missing required data. Please complete the questionnaire first.");
+        console.error("[ResultsPage] Missing input data", {
+          hasUserData: !!userData,
+          hasSoilData: !!soilData,
+        });
+        throw new Error("Missing required data");
       }
 
       const base64Soil = soilData.replace(/^data:image\/\w+;base64,/, "");
-      console.log("🚀 Sending request to /api/results...");
+
+      console.log("[ResultsPage] Sending data to /api/results to start Inngest job");
 
       const result = await axios.post("/api/results", {
         soil_test_data: base64Soil,
-        other_data: userData,
+        other_data: JSON.parse(userData),
       });
 
-      const jobId = result?.data?.jobId;
-      if (!jobId) throw new Error("❌ No job ID received from /api/results");
+      const runId = result?.data?.eventId;
+      if (!runId) {
+        console.error("[ResultsPage] No runId returned from /api/results", result.data);
+        throw new Error("No runId returned");
+      }
 
-      console.log("🔄 Job started with ID:", jobId);
+      console.log("[ResultsPage] Inngest job started", { runId });
 
-      // Directly get completed output
-      const completedRun = await getRunOutput(jobId);
-      const maybeOutput =
-        completedRun?.output?.candidates?.[0]?.content?.parts?.[0]?.text ||
-        (typeof completedRun?.output === "string" ? completedRun.output : null);
+      const completedRun = await getRunOutput(runId);
 
-      const parsedOutput = maybeOutput
-        ? parseJsonSafely(maybeOutput)
-        : completedRun.output || null;
+      console.log("[ResultsPage] Inngest job completed", {
+        status: completedRun?.status,
+      });
 
-      if (!parsedOutput) throw new Error("❌ Invalid output format");
+      const analysis = completedRun?.output?.analysis;
+      if (!analysis) {
+        console.error("[ResultsPage] Completed run has no normalized analysis output", completedRun);
+        throw new Error("Invalid analysis output");
+      }
 
-      console.log("✅ Parsed new analysis data:", parsedOutput);
-      localStorage.setItem("ANALYSIS_RESULT", JSON.stringify(parsedOutput));
-      setAnalysisData(parsedOutput);
+      console.log("[ResultsPage] Analysis successfully received and normalized");
+
+      localStorage.setItem("ANALYSIS_RESULT", JSON.stringify(analysis));
+      setAnalysisData(analysis);
+
     } catch (err) {
-      console.error("💥 Error fetching analysis data:", err);
+      console.error("[ResultsPage] Analysis pipeline failed", err);
     } finally {
+      console.log("[ResultsPage] Analysis pipeline finished");
       setIsLoading(false);
     }
   };
 
   fetchAnalysisData();
 }, []);
+
+
 
 
 
@@ -322,7 +321,7 @@ useEffect(() => {
                 <div className="flex gap-4 sm:gap-6">
                   <div className="text-center">
                     <div className="text-3xl sm:text-4xl font-bold text-green-700">
-                      {estimated_yield_increase_percent}%
+                      {estimated_yield_increase_percent}
                     </div>
                     <div className="text-xs sm:text-sm text-gray-600">
                       Potential Yield Increase

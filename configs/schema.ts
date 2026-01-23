@@ -9,7 +9,7 @@ export const userSoilAnalysis = pgTable("userSoilAnalysis",{
     id:integer().primaryKey().generatedAlwaysAsIdentity(),
     soilTestData : varchar(),
     FieldData:json(),
-    SoilAnaysisData:json(),
+    analysis:json(),
     createdOn:varchar(),
     userEmail:varchar().references(()=>usersTable.email)
 })

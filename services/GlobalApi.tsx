@@ -1,79 +1,76 @@
-export const RunStatus = async (eventId: string) => {
-  try {
-    console.log("🔍 Starting RunStatus request for runId:", eventId);
+export const RunStatus = async (runId: string) => {
+  console.log("[InngestClient] Fetching run status", { runId });
 
-    if (!eventId || eventId.trim() === "") {
-      throw new Error("Invalid eventId provided");
-    }
+  const res = await fetch(`/api/inngest/status?runId=${runId}`);
 
-    const url = `/api/inngest/?runid=${eventId}`;
-    console.log("📡 Making request to:", url);
-
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${process.env.NEXT_PUBLIC_INNGEST_SIGNING_KEY!}`);
-
-    const requestOptions: RequestInit = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow" as RequestRedirect,
-    };
-
-    const response = await fetch(url, requestOptions);
-
-    console.log("📊 Response status:", response.status);
-    console.log("📊 Response ok:", response.ok);
-
-    const responseJson = await response.json();
-    console.log("📄 Raw response json:", responseJson);
-
-    return responseJson?.data || [];
-  } catch (error: any) {
-    console.error("❌ RunStatus error:", error.message);
-    return [];
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("[InngestClient] Status API error", {
+      runId,
+      status: res.status,
+      body: text,
+    });
+    throw new Error("Failed to fetch run status");
   }
+
+  const json = await res.json();
+  console.log("[InngestClient] Status API response received", {
+    runId,
+    runCount: json?.data?.length || 0,
+  });
+
+  return json?.data || [];
 };
 
-export async function getRunOutput(eventId: string) {
-  if (!eventId || eventId.trim() === "") {
-    throw new Error("Invalid eventId provided to getRunOutput");
-  }
-
-  console.log("🔄 Starting to poll for job completion:", eventId);
+export async function getRunOutput(runId: string) {
+  console.log("[InngestClient] Starting polling for run completion", { runId });
 
   let attempts = 0;
-  const maxAttempts = 80; 
-  const delay = 1000; 
+  let delay = 1000;
+  const maxAttempts = 25;
+
   while (attempts < maxAttempts) {
     attempts++;
-    console.log(`🔄 Polling attempt ${attempts}/${maxAttempts} for eventId:`, eventId);
 
-    const runs = await RunStatus(eventId);
+    console.log("[InngestClient] Poll attempt", {
+      runId,
+      attempt: attempts,
+      delayMs: delay,
+    });
 
-    if (!Array.isArray(runs) || runs.length === 0) {
-      console.warn(`⚠️ No runs found (attempt ${attempts})`);
-      await new Promise((resolve) => setTimeout(resolve, delay));
+    const runs = await RunStatus(runId);
+
+    if (!runs.length) {
+      console.log("[InngestClient] No runs found yet, retrying after delay");
+      await new Promise((r) => setTimeout(r, delay));
+      delay = Math.min(delay * 1.5, 8000);
       continue;
     }
 
-    const runStatus = runs[0].status;
-    console.log(`📊 Current status: ${runStatus} (attempt ${attempts})`);
+    const run = runs[0];
+    console.log("[InngestClient] Current run status", {
+      runId,
+      status: run.status,
+    });
 
-    if (runStatus === "Completed") {
-      console.log("✅ Job completed successfully:", runs[0]);
-      return runs[0];
+    if (run.status === "Completed") {
+      console.log("[InngestClient] Run completed successfully", { runId });
+      return run;
     }
 
-    if (runStatus === "Failed" || runStatus === "Cancelled") {
-      console.error(`❌ Job ${runStatus}:`, runs[0]);
-      throw new Error(
-        `Function run ${runStatus}: ${runs[0].error || "No error details"}`
-      );
+    if (run.status === "Failed" || run.status === "Cancelled") {
+      console.error("[InngestClient] Run failed", {
+        runId,
+        status: run.status,
+        error: run.error,
+      });
+      throw new Error(run.error || "Inngest run failed");
     }
 
-    // Still running, wait and try again
-    console.log(`⏳ Job still ${runStatus}, waiting 1 second...`);
-    await new Promise((resolve) => setTimeout(resolve, delay));
+    await new Promise((r) => setTimeout(r, delay));
+    delay = Math.min(delay * 1.5, 8000);
   }
 
-  throw new Error(`Job polling timeout after ${maxAttempts} attempts (~10s)`);
+  console.error("[InngestClient] Run polling timed out", { runId });
+  throw new Error("Run timed out");
 }

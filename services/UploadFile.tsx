@@ -14,3 +14,7 @@ export async function uploadToImagekit(buffer: Buffer, fileName: string) {
   });
   return res;
 }
+export async function deleteFromImagekit(fileId: string) {
+  const res = await imagekit.deleteFile(fileId);
+  return res;
+}

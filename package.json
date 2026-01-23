@@ -64,6 +64,8 @@
     "remeda": "^2.32.0",
     "shiki": "^1.29.2",
     "sonner": "^2.0.7",
+    "stream-chat": "^9.27.2",
+    "stream-chat-react": "^13.13.1",
     "streamdown": "^1.4.0",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",

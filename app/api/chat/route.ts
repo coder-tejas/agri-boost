@@ -2,6 +2,7 @@ import { convertToModelMessages, createUIMessageStreamResponse, ModelMessage, st
 import { NextRequest } from "next/server";
 import { google } from "@ai-sdk/google"
 import { currentUser } from "@clerk/nextjs/server";
+
 // import { createGoogleGenerativeAI } from '@ai-sdk/google';
 export async function POST(req: NextRequest): Promise<Response> {
   // console.log("Request -> ",req);
@@ -9,14 +10,14 @@ export async function POST(req: NextRequest): Promise<Response> {
   const body = await req.json();
   const user = currentUser();
 
-  console.log("body -> ", req.body);
+
   const messages: UIMessage[] = body.messages;
   const soilData = body.farmerData
   const analysisData = body.analysisData
   const locale = req.cookies.get('NEXT_LOCALE')?.value || 'en';
   const modelMessages: ModelMessage[] = convertToModelMessages(messages);
   const streamTextResult = streamText({
-    model: google('gemini-2.0-flash'),
+    model: google('gemini-2.5-flash'),
     messages: modelMessages,
     system: `You are KrishiSahayak, an AI agriculture assistant for farmers. 
 Use the farmer's soil, crop, and field data to give practical, data-driven advice on improving yield, soil health, and sustainability. 
