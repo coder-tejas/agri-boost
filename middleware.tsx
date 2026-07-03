@@ -4,9 +4,11 @@ import type { NextRequest } from 'next/server';
 
 const isPublicRoute = createRouteMatcher([
   '/',
+  '/pricing',
   '/sign-in(.*)',
   '/sign-up(.*)',
-  '/api/inngest(.*)', // Matches /api/inngest, /api/inngest/test1, /api/inngest/test2, etc.
+  '/api/inngest(.*)',
+  '/api/razorpay/webhook(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, request: NextRequest) => {

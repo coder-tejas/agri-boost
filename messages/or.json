@@ -3,6 +3,7 @@
     "header": {
       "features": "ବିଶେଷତା",
       "howItWorks": "ଏହା କିପରି କାମ କରେ",
+      "pricing": "ମୂଲ୍ୟ",
       "getStarted": "ଆରମ୍ଭ କରନ୍ତୁ"
     },
     "hero": {
@@ -337,12 +338,88 @@
     }
   },
 
-"sidebar": {
+"pricing": {
+    "badge": "ସରଳ, ସ୍ୱଚ୍ଛ ମୂଲ୍ୟ",
+    "title": "ଆପଣଙ୍କ ଚାଷ ପାଇଁ ସଠିକ୍ ଯୋଜନା ବାଛନ୍ତୁ",
+    "subtitle": "ମାଗଣାରେ ଆରମ୍ଭ କରନ୍ତୁ ଏବଂ ଆବଶ୍ୟକତା ଅନୁଯାୟୀ ଅପଗ୍ରେଡ୍ କରନ୍ତୁ। କୌଣସି ଲୁକ୍କାୟିତ ଫି ନାହିଁ, ଯେକୌଣସି ସମୟରେ ବାତିଲ୍ କରନ୍ତୁ।",
+    "month": "ମାସ",
+    "mostPopular": "ସବୁଠୁ ଲୋକପ୍ରିୟ",
+    "plans": {
+      "free": {
+        "name": "ମାଗଣା",
+        "description": "ମୌଳିକ ଫସଲ ବିଶ୍ଳେଷଣ ଉପକରଣ ସହିତ ଆରମ୍ଭ କରନ୍ତୁ"
+      },
+      "standard": {
+        "name": "ଷ୍ଟାଣ୍ଡାର୍ଡ",
+        "description": "ଛୋଟରୁ ମଧ୍ୟମ ଚାଷ ପାଇଁ ଉପଯୁକ୍ତ"
+      },
+      "pro": {
+        "name": "ପ୍ରୋ",
+        "description": "ବଡ଼ ବ୍ୟବସାୟିକ କୃଷି ପାଇଁ"
+      }
+    },
+    "features": {
+      "analyses": {
+        "label": "ଫସଲ ବିଶ୍ଳେଷଣ",
+        "values": {
+          "2": "ମାସକୁ 2",
+          "10": "ମାସକୁ 10",
+          "unlimited": "ଅସୀମ"
+        }
+      },
+      "chatMessages": {
+        "label": "AI ଚାଟ୍ ବାର୍ତ୍ତା",
+        "values": {
+          "50": "ମାସକୁ 50",
+          "unlimited": "ଅସୀମ"
+        }
+      },
+      "community": {
+        "label": "ସମ୍ପ୍ରଦାୟ ପ୍ରବେଶ",
+        "values": {
+          "basic": "ମୌଳିକ (କେବଳ ପଢ଼ିବା)",
+          "full": "ସମ୍ପୂର୍ଣ୍ଣ ପ୍ରବେଶ"
+        }
+      },
+      "expertContact": {
+        "label": "ବିଶେଷଜ୍ଞ ସମ୍ପର୍କ",
+        "values": {
+          "none": "ଉପଲବ୍ଧ ନାହିଁ",
+          "3": "ମାସକୁ 3",
+          "unlimited": "ଅସୀମ"
+        }
+      },
+      "pdfReports": {
+        "label": "PDF ରିପୋର୍ଟ ଡାଉନଲୋଡ୍",
+        "values": {
+          "limited": "ସୀମିତ",
+          "unlimited": "ଅସୀମ"
+        }
+      },
+      "dataStorage": {
+        "label": "ତଥ୍ୟ ସଂରକ୍ଷଣ",
+        "values": {
+          "30days": "30 ଦିନ",
+          "1year": "1 ବର୍ଷ",
+          "unlimited": "ଅସୀମ"
+        }
+      }
+    },
+    "cta": {
+      "signUp": "ମାଗଣାରେ ଆରମ୍ଭ କରନ୍ତୁ",
+      "subscribe": "ସବସ୍କ୍ରାଇବ୍ କରନ୍ତୁ",
+      "currentPlan": "ବର୍ତ୍ତମାନର ଯୋଜନା",
+      "processing": "ପ୍ରକ୍ରିୟାକରଣ ହେଉଛି..."
+    },
+    "manageSubscription": "ସବସ୍କ୍ରିପସନ୍ ପରିଚାଳନା କରନ୍ତୁ"
+  },
+  "sidebar": {
     "navigation": {
       "cropAnalysis": "ଫସଲ ବିଶ୍ଳେଷଣ",
       "chatbotAssistant": "ଚାଟବଟ୍ ସହାୟକ",
       "community": "ସମ୍ପ୍ରଦାୟ",
       "expert": "ବିଶେଷଜ୍ଞ",
+      "pricing": "ମୂଲ୍ୟ",
       "setting": "ସେଟିଂ"
     },
     "logo": {

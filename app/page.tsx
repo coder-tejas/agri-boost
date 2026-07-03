@@ -73,6 +73,12 @@ useEffect(() => {
               >
                 {t("header.howItWorks")}
               </a>
+              <a
+                href="/pricing"
+                className="hidden md:inline-flex items-center px-3 py-2 rounded-md text-neutral-600 hover:text-primary-700 hover:bg-primary-50 dark:hover:bg-neutral-800 transition-colors font-medium"
+              >
+                {t("header.pricing")}
+              </a>
               <LanguageSelector />
             </div>
           </div>

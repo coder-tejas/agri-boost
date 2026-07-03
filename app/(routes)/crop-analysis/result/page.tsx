@@ -26,8 +26,8 @@ import {
 import Link from "next/link";
 import AppHeader from "@/app/_components/AppHeader";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { useState, useEffect, useRef } from "react";
-import { getRunOutput } from "@/services/GlobalApi";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
@@ -45,15 +45,38 @@ const ShimmerCard = () => (
   </Card>
 );
 
+type CropRecommendation = { crop: string; reason: string };
+type FertilizerItem = { type: string; quantity_per_acre: string; application_stage: string; rationale: string };
+type PesticideItem = { pest: string; recommended_pesticide: string; application_method: string; safety_notes: string };
+type IrrigationStrategy = { recommended_method: string; frequency: string; water_saving_tips: string };
+type SoilImprovement = { method: string; benefit: string; duration: string };
+type ClimateTip = { tip: string; reason: string };
+type SustainabilityPractice = { practice: string; impact: string };
+type SoilSummary = { pH: string; nutrient_balance: string; organic_carbon: string; key_observations: string };
+
+type AnalysisData = {
+  soil_summary?: SoilSummary;
+  recommended_crops?: CropRecommendation[];
+  fertilizer_plan?: FertilizerItem[];
+  pesticide_plan?: PesticideItem[];
+  irrigation_strategy?: IrrigationStrategy;
+  soil_improvement_plan?: SoilImprovement[];
+  climate_specific_tips?: ClimateTip[];
+  sustainability_practices?: SustainabilityPractice[];
+  estimated_yield_increase_percent?: string;
+  confidence_score?: string | number;
+};
+
 const ResultsPage = () => {
   const t = useTranslations("crop-analysis.results");
   const [isLoading, setIsLoading] = useState(true);
-  const [analysisData, setAnalysisData] = useState(null);
+  const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
   const router = useRouter();
   const hasFetchedRef = useRef(false);
 
   async function downloadPDF() {
     try {
+      toast.loading("Generating PDF...");
       const res = await fetch("/api/convert-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -68,7 +91,11 @@ const ResultsPage = () => {
       a.download = "Farm_Analysis_Report.pdf";
       a.click();
       URL.revokeObjectURL(url);
+      toast.dismiss();
+      toast.success("PDF report downloaded successfully");
     } catch (error) {
+      toast.dismiss();
+      toast.error("Failed to download PDF. Please try again.");
       console.error("Error downloading PDF:", error);
     }
   }
@@ -76,16 +103,18 @@ async function delete_analysis_data() {
   try {
     const res = await axios.delete("/api/saved-data");
     if (res.status !== 200) {
-      console.warn("⚠️ Backend failed to reset data");
+      toast.error("Failed to reset analysis data");
       return;
     }
     localStorage.removeItem("ANALYSIS_RESULT");
     localStorage.removeItem("USER_SOIL_DATA");
     localStorage.removeItem("USER_OTHER_DATA");
 
+    toast.success("Analysis data cleared. Starting fresh!");
     router.push("/crop-analysis/upload");
-  } catch (err) {
-    console.error("❌ Error resetting analysis data:", err.message || err);
+  } catch (err: unknown) {
+    toast.error("Failed to reset data");
+    console.error("❌ Error resetting analysis data:", err instanceof Error ? err.message : err);
   }
 }
 
@@ -139,12 +168,10 @@ useEffect(() => {
         throw new Error("Missing required data");
       }
 
-      const base64Soil = soilData.replace(/^data:image\/\w+;base64,/, "");
-
       console.log("[ResultsPage] Sending data to /api/results to start Inngest job");
 
       const result = await axios.post("/api/results", {
-        soil_test_data: base64Soil,
+        soil_test_data: soilData,
         other_data: JSON.parse(userData),
       });
 
@@ -156,19 +183,30 @@ useEffect(() => {
 
       console.log("[ResultsPage] Inngest job started", { runId });
 
-      const completedRun = await getRunOutput(runId);
+      const analysis = await new Promise<any>((resolve, reject) => {
+        const eventSource = new EventSource(`/api/analysis-status/${runId}`);
 
-      console.log("[ResultsPage] Inngest job completed", {
-        status: completedRun?.status,
+        eventSource.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+
+          if (data.status === "completed") {
+            eventSource.close();
+            resolve(data.output?.analysis);
+          } else if (data.status === "failed" || data.status === "error" || data.status === "timeout") {
+            eventSource.close();
+            reject(new Error(data.message));
+          }
+        };
+
+        eventSource.onerror = () => {
+          eventSource.close();
+          reject(new Error("SSE connection failed"));
+        };
       });
 
-      const analysis = completedRun?.output?.analysis;
       if (!analysis) {
-        console.error("[ResultsPage] Completed run has no normalized analysis output", completedRun);
         throw new Error("Invalid analysis output");
       }
-
-      console.log("[ResultsPage] Analysis successfully received and normalized");
 
       localStorage.setItem("ANALYSIS_RESULT", JSON.stringify(analysis));
       setAnalysisData(analysis);

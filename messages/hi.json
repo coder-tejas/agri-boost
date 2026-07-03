@@ -3,6 +3,7 @@
     "header": {
       "features": "विशेषताएं",
       "howItWorks": "यह कैसे काम करता है",
+      "pricing": "मूल्य निर्धारण",
       "getStarted": "शुरू करें"
     },
     "hero": {
@@ -337,12 +338,88 @@
     }
   },
 
- "sidebar": {
+ "pricing": {
+    "badge": "सरल, पारदर्शी मूल्य निर्धारण",
+    "title": "अपने खेत के लिए सही योजना चुनें",
+    "subtitle": "मुफ्त शुरू करें और अपनी ज़रूरतों के अनुसार अपग्रेड करें। कोई छिपी फीस नहीं, कभी भी रद्द करें।",
+    "month": "महीना",
+    "mostPopular": "सबसे लोकप्रिय",
+    "plans": {
+      "free": {
+        "name": "फ्री",
+        "description": "बुनियादी फसल विश्लेषण उपकरणों के साथ शुरू करें"
+      },
+      "standard": {
+        "name": "स्टैंडर्ड",
+        "description": "छोटे से मध्यम खेतों के लिए उपयुक्त"
+      },
+      "pro": {
+        "name": "प्रो",
+        "description": "बड़े पैमाने पर व्यावसायिक कृषि कार्यों के लिए"
+      }
+    },
+    "features": {
+      "analyses": {
+        "label": "फसल विश्लेषण",
+        "values": {
+          "2": "प्रति माह 2",
+          "10": "प्रति माह 10",
+          "unlimited": "असीमित"
+        }
+      },
+      "chatMessages": {
+        "label": "एआई चैट संदेश",
+        "values": {
+          "50": "प्रति माह 50",
+          "unlimited": "असीमित"
+        }
+      },
+      "community": {
+        "label": "समुदाय पहुंच",
+        "values": {
+          "basic": "बुनियादी (केवल पढ़ें)",
+          "full": "पूर्ण पहुंच"
+        }
+      },
+      "expertContact": {
+        "label": "विशेषज्ञ संपर्क",
+        "values": {
+          "none": "उपलब्ध नहीं",
+          "3": "प्रति माह 3",
+          "unlimited": "असीमित"
+        }
+      },
+      "pdfReports": {
+        "label": "पीडीएफ रिपोर्ट डाउनलोड",
+        "values": {
+          "limited": "सीमित",
+          "unlimited": "असीमित"
+        }
+      },
+      "dataStorage": {
+        "label": "डेटा संग्रहण",
+        "values": {
+          "30days": "30 दिन",
+          "1year": "1 वर्ष",
+          "unlimited": "असीमित"
+        }
+      }
+    },
+    "cta": {
+      "signUp": "मुफ्त में शुरू करें",
+      "subscribe": "सब्सक्राइब करें",
+      "currentPlan": "वर्तमान योजना",
+      "processing": "प्रक्रिया हो रही है..."
+    },
+    "manageSubscription": "सदस्यता प्रबंधित करें"
+  },
+  "sidebar": {
     "navigation": {
       "cropAnalysis": "फसल विश्लेषण",
       "chatbotAssistant": "चैटबॉट सहायक",
       "community": "समुदाय",
       "expert": "विशेषज्ञ",
+      "pricing": "मूल्य निर्धारण",
       "setting": "सेटिंग"
     },
     "logo": {

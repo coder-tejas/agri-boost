@@ -74,8 +74,7 @@ const QuestionnairePage = () => {
       const userFormData: Partial<FormData> = formData;
       const userDataString = JSON.stringify(userFormData);
       localStorage.setItem("USER_OTHER_DATA", userDataString);
-      // const getSoilData = localStorage.getItem("USER_SOIL_DATA");
-      // const soil_data = getSoilData?.replace(/^data:image\/\w+;base64,/, "");
+      toast.success("Form saved! Starting analysis...");
       router.push("/crop-analysis/result");
       // Navigate to results page or submit to API
       // const result = await axios.post("/api/results", {
