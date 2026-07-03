@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 
 interface NavigationButtonsProps {
   currentStep: number;
@@ -9,6 +9,7 @@ interface NavigationButtonsProps {
   onNext: () => void;
   onPrev: () => void;
   onSubmit?: () => void;
+  isSubmitting?: boolean;
 }
 
 const NavigationButtons = ({
@@ -17,6 +18,7 @@ const NavigationButtons = ({
   onNext,
   onPrev,
   onSubmit,
+  isSubmitting,
 }: NavigationButtonsProps) => {
   const t = useTranslations("crop-analysis.questionnaire");
   const isLastStep = currentStep === totalSteps;
@@ -28,7 +30,7 @@ const NavigationButtons = ({
         variant="outline"
         size="lg"
         onClick={onPrev}
-        disabled={isFirstStep}
+        disabled={isFirstStep || isSubmitting}
         className="text-base sm:text-lg px-4 sm:px-6 py-2 sm:py-3 w-full sm:w-auto order-2 sm:order-1"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
@@ -49,16 +51,27 @@ const NavigationButtons = ({
       {isLastStep ? (
         <Button
           size="lg"
+          disabled={isSubmitting}
           className="text-base sm:text-lg px-6 sm:px-8 py-2 sm:py-3 w-full sm:w-auto order-1 sm:order-3"
           onClick={onSubmit}
         >
-          {t("buttons.submit")}
-          <ArrowRight className="w-4 h-4 ml-2" />
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            <>
+              {t("buttons.submit")}
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </>
+          )}
         </Button>
       ) : (
         <Button
           size="lg"
           onClick={onNext}
+          disabled={isSubmitting}
           className="text-base sm:text-lg px-6 sm:px-8 py-2 sm:py-3 w-full sm:w-auto order-1 sm:order-3"
         >
           {t("buttons.next")}

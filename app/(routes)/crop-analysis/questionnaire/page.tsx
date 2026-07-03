@@ -16,6 +16,7 @@ const TOTAL_STEPS = 4;
 const QuestionnairePage = () => {
   const router = useRouter();
   const [checking, setChecking] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const t = useTranslations("crop-analysis.questionnaire");
   const { errors, validateStep, validateForm, clearError } =
     useFormValidation();
@@ -40,7 +41,33 @@ const QuestionnairePage = () => {
       .catch(() => setChecking(false));
   }, [router]);
 
-  if (checking) return null;
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-background">
+        <AppHeader>
+          <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+            <div className="flex items-center justify-center">
+              <div className="flex items-center space-x-2">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-neutral-200 rounded-lg animate-pulse" />
+                <div className="h-7 w-48 bg-neutral-200 rounded animate-pulse" />
+              </div>
+            </div>
+          </div>
+        </AppHeader>
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="h-6 w-32 bg-neutral-200 rounded animate-pulse" />
+            <div className="h-2 w-full bg-neutral-200 rounded animate-pulse" />
+            <div className="h-96 w-full bg-neutral-200 rounded-xl animate-pulse" />
+            <div className="flex gap-4">
+              <div className="h-12 w-32 bg-neutral-200 rounded-lg animate-pulse" />
+              <div className="h-12 w-32 bg-neutral-200 rounded-lg animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<Partial<FormData>>({
@@ -85,37 +112,24 @@ const QuestionnairePage = () => {
   };
 
   const handleSubmit = async () => {
-    // Validate entire form before submission
-    if (validateForm(formData)) {
-      // Form is valid, proceed with submission
-      console.log("Form submitted:", formData);
+    if (isSubmitting) return;
 
-      const getData = localStorage.getItem("USER_OTHER_DATA");
-      if (getData !== null) {
-        localStorage.removeItem("USER_OTHER_DATA");
+    if (validateForm(formData)) {
+      setIsSubmitting(true);
+
+      try {
+        const getData = localStorage.getItem("USER_OTHER_DATA");
+        if (getData !== null) {
+          localStorage.removeItem("USER_OTHER_DATA");
+        }
+        const userFormData: Partial<FormData> = formData;
+        const userDataString = JSON.stringify(userFormData);
+        localStorage.setItem("USER_OTHER_DATA", userDataString);
+        toast.success("Form saved! Starting analysis...");
+        router.push("/crop-analysis/result");
+      } finally {
+        setIsSubmitting(false);
       }
-      const userFormData: Partial<FormData> = formData;
-      const userDataString = JSON.stringify(userFormData);
-      localStorage.setItem("USER_OTHER_DATA", userDataString);
-      toast.success("Form saved! Starting analysis...");
-      router.push("/crop-analysis/result");
-      // Navigate to results page or submit to API
-      // const result = await axios.post("/api/results", {
-      //   soil_test_data: soil_data,
-      //   other_data: userDataString,
-      // });
-      // const jobid = result.data.jobId;
-      // console.log("Got Gob Id : ", result.data.jobId);
-      // if (!jobid) {
-      //   throw new Error("NO job id received");
-      // }
-      // console.log("🔄 Job started with ID:", jobid);
-      // try {
-      //   const completedRun = await getRunOutput(jobid);
-      //   console.log("Task Completed -> ", completedRun.output);
-      // } catch (err) {
-      //   console.error("Error in polling ");
-      // }
     } else {
       toast.error(t("validation.pleaseCompleteAllFields"));
     }
@@ -163,6 +177,7 @@ const QuestionnairePage = () => {
             onNext={handleNext}
             onPrev={handlePrev}
             onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
           />
         </div>
       </div>
