@@ -33,5 +33,6 @@ export const userSoilAnalysis = pgTable("userSoilAnalysis",{
     FieldData:json(),
     analysis:json(),
     createdOn:varchar(),
-    userEmail:varchar().references(()=>usersTable.email)
+    userEmail:varchar().references(()=>usersTable.email),
+    eventId: varchar({ length: 255 }),
 })

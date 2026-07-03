@@ -1,4 +1,7 @@
 import { NextRequest } from "next/server";
+import { db } from "@/configs/db";
+import { userSoilAnalysis } from "@/configs/schema";
+import { eq } from "drizzle-orm";
 
 export async function GET(
   _req: NextRequest,
@@ -14,8 +17,6 @@ export async function GET(
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
       };
 
-      const inngestUrl = `https://app.inngest.com/v1/events/${eventId}/runs`;
-
       let attempts = 0;
       let delay = 1000;
       const maxAttempts = 60;
@@ -24,52 +25,28 @@ export async function GET(
         attempts++;
 
         try {
-          const res = await fetch(inngestUrl, {
-            headers: {
-              Authorization: `Bearer ${process.env.INNGEST_SIGNING_KEY}`,
-            },
-          });
+          const rows = await db
+            .select()
+            .from(userSoilAnalysis)
+            .where(eq(userSoilAnalysis.eventId, eventId))
+            .limit(1);
 
-          if (!res.ok) {
-            sendEvent({ status: "error", message: "Inngest API error" });
-            break;
+          if (rows.length > 0) {
+            const row = rows[0];
+            sendEvent({
+              status: "completed",
+              message: "Analysis complete",
+              output: { analysis: row.analysis },
+            });
+            controller.close();
+            return;
           }
 
-          const json = await res.json();
-          const runs = json?.data || [];
-
-          if (runs.length === 0) {
-            sendEvent({ status: "pending", message: "Waiting for job to start" });
-          } else {
-            const run = runs[0];
-
-            switch (run.status) {
-              case "Running":
-                sendEvent({ status: "running", message: "Analysis in progress" });
-                break;
-              case "Completed":
-                sendEvent({
-                  status: "completed",
-                  message: "Analysis complete",
-                  output: run.output,
-                });
-                controller.close();
-                return;
-              case "Failed":
-              case "Cancelled":
-                sendEvent({
-                  status: "failed",
-                  message: run.error || "Analysis failed",
-                });
-                controller.close();
-                return;
-              default:
-                sendEvent({ status: "unknown", message: `Status: ${run.status}` });
-            }
-          }
+          sendEvent({ status: "pending", message: "Waiting for analysis to complete" });
         } catch {
-          sendEvent({ status: "error", message: "Failed to check status" });
-          break;
+          sendEvent({ status: "error", message: "Failed to check analysis status" });
+          controller.close();
+          return;
         }
 
         await new Promise((r) => setTimeout(r, delay));

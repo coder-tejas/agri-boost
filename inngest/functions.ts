@@ -246,7 +246,8 @@ You are an advanced agricultural AI advisor specializing in precision farming an
           analysis: GeneratePrediction,
           userEmail: userEmail,
           createdOn: moment().format("YYYY-MM-DD"),
-        }).returning();
+          eventId: event.id,
+        });
       } catch (error) {
         console.error("Database insert error (non-fatal):", error);
       }

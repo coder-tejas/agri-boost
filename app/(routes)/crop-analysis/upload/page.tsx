@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -24,9 +24,32 @@ import { useRouter } from "next/navigation";
 const UploadPage = () => {
   const t = useTranslations("crop-analysis.upload");
   const [showCamera, setShowCamera] = useState(false);
+  const [checking, setChecking] = useState(true);
   const camera = useRef(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const cached = localStorage.getItem("ANALYSIS_RESULT");
+    if (cached) {
+      router.replace("/crop-analysis/result");
+      return;
+    }
+
+    fetch("/api/saved-data")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0 && data[0]?.analysis) {
+          localStorage.setItem("ANALYSIS_RESULT", JSON.stringify(data[0].analysis));
+          router.replace("/crop-analysis/result");
+          return;
+        }
+        setChecking(false);
+      })
+      .catch(() => setChecking(false));
+  }, [router]);
+
+  if (checking) return null;
 
   const {
     uploadedFiles,
