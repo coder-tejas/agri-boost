@@ -22,6 +22,8 @@ import {
   Sun,
   CloudRain,
   Beaker,
+  RefreshCw,
+  Home,
 } from "lucide-react";
 import Link from "next/link";
 import AppHeader from "@/app/_components/AppHeader";
@@ -71,8 +73,11 @@ const ResultsPage = () => {
   const t = useTranslations("crop-analysis.results");
   const [isLoading, setIsLoading] = useState(true);
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string>("");
   const router = useRouter();
   const hasFetchedRef = useRef(false);
+  const fetchAnalysisDataRef = useRef<(() => Promise<void>) | null>(null);
 
   async function downloadPDF() {
     try {
@@ -118,113 +123,155 @@ async function delete_analysis_data() {
   }
 }
 
-useEffect(() => {
-  const fetchAnalysisData = async () => {
-    if (hasFetchedRef.current) {
-      console.log("[ResultsPage] Fetch already executed, skipping");
+const fetchAnalysisData = async () => {
+  if (hasFetchedRef.current) {
+    console.log("[ResultsPage] Fetch already executed, skipping");
+    return;
+  }
+  hasFetchedRef.current = true;
+
+  console.log("[ResultsPage] Starting analysis data pipeline");
+  setIsLoading(true);
+
+  try {
+    // 1. Cache
+    const cached = localStorage.getItem("ANALYSIS_RESULT");
+    if (cached) {
+      console.log("[ResultsPage] Loaded analysis from local cache");
+      setAnalysisData(JSON.parse(cached));
       return;
     }
-    hasFetchedRef.current = true;
 
-    console.log("[ResultsPage] Starting analysis data pipeline");
-    setIsLoading(true);
+    console.log("[ResultsPage] No cache found, checking server");
 
-    try {
-      // 1. Cache
-      const cached = localStorage.getItem("ANALYSIS_RESULT");
-      if (cached) {
-        console.log("[ResultsPage] Loaded analysis from local cache");
-        setAnalysisData(JSON.parse(cached));
+    // 2. Server saved result
+    const savedRes = await fetch("/api/saved-data");
+    const savedData = await savedRes.json();
+
+    if (Array.isArray(savedData) && savedData.length > 0) {
+      const analysis = savedData[0]?.analysis;
+      if (analysis) {
+        console.log("[ResultsPage] Loaded normalized analysis from server");
+        localStorage.setItem("ANALYSIS_RESULT", JSON.stringify(analysis));
+        setAnalysisData(analysis);
         return;
       }
-
-      console.log("[ResultsPage] No cache found, checking server");
-
-      // 2. Server saved result
-      const savedRes = await fetch("/api/saved-data");
-      const savedData = await savedRes.json();
-
-      if (Array.isArray(savedData) && savedData.length > 0) {
-        const analysis = savedData[0]?.analysis;
-        if (analysis) {
-          console.log("[ResultsPage] Loaded normalized analysis from server");
-          localStorage.setItem("ANALYSIS_RESULT", JSON.stringify(analysis));
-          setAnalysisData(analysis);
-          return;
-        }
-      }
-
-      console.log("[ResultsPage] No stored analysis found, triggering new run");
-
-      // 3. Trigger new run
-      const userData = localStorage.getItem("USER_OTHER_DATA");
-      const soilData = localStorage.getItem("USER_SOIL_DATA");
-
-      if (!userData || !soilData) {
-        console.error("[ResultsPage] Missing input data", {
-          hasUserData: !!userData,
-          hasSoilData: !!soilData,
-        });
-        throw new Error("Missing required data");
-      }
-
-      console.log("[ResultsPage] Sending data to /api/results to start Inngest job");
-
-      const result = await axios.post("/api/results", {
-        soil_test_data: soilData,
-        other_data: JSON.parse(userData),
-      });
-
-      const runId = result?.data?.eventId;
-      if (!runId) {
-        console.error("[ResultsPage] No runId returned from /api/results", result.data);
-        throw new Error("No runId returned");
-      }
-
-      console.log("[ResultsPage] Inngest job started", { runId });
-
-      const analysis = await new Promise<any>((resolve, reject) => {
-        const eventSource = new EventSource(`/api/analysis-status/${runId}`);
-
-        eventSource.onmessage = (event) => {
-          const data = JSON.parse(event.data);
-
-          if (data.status === "completed") {
-            eventSource.close();
-            resolve(data.output?.analysis);
-          } else if (data.status === "failed" || data.status === "error" || data.status === "timeout") {
-            eventSource.close();
-            reject(new Error(data.message));
-          }
-        };
-
-        eventSource.onerror = () => {
-          eventSource.close();
-          reject(new Error("SSE connection failed"));
-        };
-      });
-
-      if (!analysis) {
-        throw new Error("Invalid analysis output");
-      }
-
-      localStorage.setItem("ANALYSIS_RESULT", JSON.stringify(analysis));
-      setAnalysisData(analysis);
-
-    } catch (err) {
-      console.error("[ResultsPage] Analysis pipeline failed", err);
-    } finally {
-      console.log("[ResultsPage] Analysis pipeline finished");
-      setIsLoading(false);
     }
-  };
 
+    console.log("[ResultsPage] No stored analysis found, triggering new run");
+
+    setStatusMessage("Starting analysis...");
+
+    // 3. Trigger new run
+    const userData = localStorage.getItem("USER_OTHER_DATA");
+    const soilData = localStorage.getItem("USER_SOIL_DATA");
+
+    if (!userData || !soilData) {
+      console.error("[ResultsPage] Missing input data", {
+        hasUserData: !!userData,
+        hasSoilData: !!soilData,
+      });
+      throw new Error("Missing required data");
+    }
+
+    console.log("[ResultsPage] Sending data to /api/results to start Inngest job");
+
+    const result = await axios.post("/api/results", {
+      soil_test_data: soilData,
+      other_data: JSON.parse(userData),
+    });
+
+    const runId = result?.data?.eventId;
+    if (!runId) {
+      console.error("[ResultsPage] No runId returned from /api/results", result.data);
+      throw new Error("No runId returned");
+    }
+
+    console.log("[ResultsPage] Inngest job started", { runId });
+
+    setStatusMessage("Analyzing your soil data...");
+
+    const analysis = await new Promise<any>((resolve, reject) => {
+      const eventSource = new EventSource(`/api/analysis-status/${runId}`);
+
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.status === "completed") {
+          eventSource.close();
+          resolve(data.output?.analysis);
+        } else if (data.status === "failed" || data.status === "error" || data.status === "timeout") {
+          eventSource.close();
+          reject(new Error(data.message || "Analysis failed"));
+        } else if (data.message) {
+          setStatusMessage(data.message);
+        }
+      };
+
+      eventSource.onerror = () => {
+        eventSource.close();
+        reject(new Error("Connection to analysis server lost. Please check your connection."));
+      };
+    });
+
+    if (!analysis) {
+      throw new Error("Invalid analysis output");
+    }
+
+    localStorage.setItem("ANALYSIS_RESULT", JSON.stringify(analysis));
+    setAnalysisData(analysis);
+
+  } catch (err) {
+    console.error("[ResultsPage] Analysis pipeline failed", err);
+    setError(err instanceof Error ? err.message : "An unexpected error occurred");
+  } finally {
+    console.log("[ResultsPage] Analysis pipeline finished");
+    setIsLoading(false);
+  }
+};
+
+useEffect(() => {
+  fetchAnalysisDataRef.current = fetchAnalysisData;
   fetchAnalysisData();
 }, []);
 
 
 
 
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-8">
+          <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Analysis Failed
+          </h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <div className="flex gap-4 justify-center">
+            <Button
+              onClick={() => {
+                setError(null);
+                hasFetchedRef.current = false;
+                setIsLoading(true);
+                fetchAnalysisDataRef.current?.();
+              }}
+              className="gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Retry
+            </Button>
+            <Button variant="outline" asChild className="gap-2">
+              <Link href="/crop-analysis/upload">
+                <Home className="w-4 h-4" />
+                Start Over
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -237,7 +284,7 @@ useEffect(() => {
                   <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-700" />
                 </div>
                 <h1 className="text-lg sm:text-2xl font-bold">
-                  Analyzing Your Farm Data...
+                  {statusMessage || "Analyzing Your Farm Data..."}
                 </h1>
               </div>
             </div>
@@ -246,6 +293,11 @@ useEffect(() => {
 
         <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
           <div className="max-w-6xl mx-auto">
+            {statusMessage && (
+              <div className="mb-4 text-center text-sm text-gray-500 animate-pulse">
+                {statusMessage}
+              </div>
+            )}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <ShimmerCard />
               <ShimmerCard />

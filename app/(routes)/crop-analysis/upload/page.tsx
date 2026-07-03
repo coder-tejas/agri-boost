@@ -49,7 +49,29 @@ const UploadPage = () => {
       .catch(() => setChecking(false));
   }, [router]);
 
-  if (checking) return null;
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-neutral-900">
+        <AppHeader>
+          <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+            <div className="flex items-center justify-center">
+              <div className="flex items-center space-x-2">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-neutral-200 rounded-lg animate-pulse" />
+                <div className="h-7 w-48 bg-neutral-200 rounded animate-pulse" />
+              </div>
+            </div>
+          </div>
+        </AppHeader>
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="h-6 w-32 bg-neutral-200 rounded animate-pulse" />
+            <div className="h-64 w-full bg-neutral-200 rounded-xl animate-pulse" />
+            <div className="h-12 w-48 bg-neutral-200 rounded-lg animate-pulse" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const {
     uploadedFiles,
