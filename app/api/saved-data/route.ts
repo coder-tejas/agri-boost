@@ -39,10 +39,10 @@ export async function GET() {
       if(!userEmail) return new NextResponse("User has no email",{status:400});
       await db.delete(userSoilAnalysis).where(eq(userSoilAnalysis.userEmail,userEmail));
       return NextResponse.json("Data Deleted Successfully",{status:200})
-  } catch(error){
+  } catch(error: unknown){
       console.error("❌ API /reset-data error:", error);
       return NextResponse.json(
-        { error: error.message || "Internal Server Error" },
+        { error: error instanceof Error ? error.message : "Internal Server Error" },
         { status: 500 }
       );
   }

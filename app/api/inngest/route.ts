@@ -10,6 +10,4 @@ export const { GET, POST, PUT } = serve({
     helloWorld,
     helloWorldlonger
   ],
-  signingKey:process.env.INNGEST_SIGNING_KEY! 
-  //^ Comment in dev ^^^^^^^
 });

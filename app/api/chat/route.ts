@@ -1,19 +1,39 @@
-import { convertToModelMessages, createUIMessageStreamResponse, ModelMessage, streamText, UIMessage } from "ai";
+import { convertToModelMessages, createUIMessageStreamResponse, type ModelMessage, streamText, type UIMessage } from "ai";
 import { NextRequest } from "next/server";
 import { google } from "@ai-sdk/google"
 import { currentUser } from "@clerk/nextjs/server";
+import { checkAndIncrement, type Plan } from "@/lib/plan-limits";
+import { db } from "@/configs/db";
+import { subscriptions } from "@/configs/schema";
+import { eq } from "drizzle-orm";
 
-// import { createGoogleGenerativeAI } from '@ai-sdk/google';
 export async function POST(req: NextRequest): Promise<Response> {
-  // console.log("Request -> ",req);
+  const user = await currentUser();
+  if (!user) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  const email = user.primaryEmailAddress?.emailAddress;
+  if (!email) {
+    return new Response("User has no email", { status: 400 });
+  }
+
+  const existingSub = await db
+    .select()
+    .from(subscriptions)
+    .where(eq(subscriptions.userEmail, email));
+  const plan: Plan = (existingSub.length > 0 ? existingSub[0].plan : "free") as Plan;
+
+  const { allowed } = await checkAndIncrement(email, "chat", plan);
+  if (!allowed) {
+    return new Response("Monthly chat limit reached", { status: 403 });
+  }
 
   const body = await req.json();
-  const user = currentUser();
-
 
   const messages: UIMessage[] = body.messages;
-  const soilData = body.farmerData
-  const analysisData = body.analysisData
+  const soilData = body.farmerData;
+  const analysisData = body.analysisData;
   const locale = req.cookies.get('NEXT_LOCALE')?.value || 'en';
   const modelMessages: ModelMessage[] = convertToModelMessages(messages);
   const streamTextResult = streamText({
@@ -33,5 +53,4 @@ Answer in Language : ${locale}
   return createUIMessageStreamResponse({
     stream
   })
-
 }

@@ -4,6 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import React, { useState, useRef, useEffect } from "react";
 import { Send, Wheat } from "lucide-react";
+import { toast } from "sonner";
 import AppHeader from "@/app/_components/AppHeader";
 import ReactMarkdown from "react-markdown";
 
@@ -41,7 +42,7 @@ export default function Page() {
     e.preventDefault();
 
     if (!farmerData || !analysisData) {
-      alert("DO CROP ANALYSIS FIRST TO CONTINUE");
+      toast.warning("Please complete crop analysis first");
       return;
     }
 

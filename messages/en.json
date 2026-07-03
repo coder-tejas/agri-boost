@@ -3,6 +3,7 @@
     "header": {
       "features": "Features",
       "howItWorks": "How It Works",
+      "pricing": "Pricing",
       "getStarted": "Get Started"
     },
     "hero": {
@@ -346,12 +347,88 @@
   }
 
   },
+  "pricing": {
+    "badge": "Simple, Transparent Pricing",
+    "title": "Choose the Right Plan for Your Farm",
+    "subtitle": "Start free and upgrade as your farming needs grow. No hidden fees, cancel anytime.",
+    "month": "month",
+    "mostPopular": "Most Popular",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "description": "Get started with basic crop analysis tools"
+      },
+      "standard": {
+        "name": "Standard",
+        "description": "Perfect for small to medium farms"
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "For large-scale commercial farming operations"
+      }
+    },
+    "features": {
+      "analyses": {
+        "label": "Crop Analysis",
+        "values": {
+          "2": "2 per month",
+          "10": "10 per month",
+          "unlimited": "Unlimited"
+        }
+      },
+      "chatMessages": {
+        "label": "AI Chat Messages",
+        "values": {
+          "50": "50 per month",
+          "unlimited": "Unlimited"
+        }
+      },
+      "community": {
+        "label": "Community Access",
+        "values": {
+          "basic": "Basic (Read-only)",
+          "full": "Full Access"
+        }
+      },
+      "expertContact": {
+        "label": "Expert Contact",
+        "values": {
+          "none": "Not available",
+          "3": "3 per month",
+          "unlimited": "Unlimited"
+        }
+      },
+      "pdfReports": {
+        "label": "PDF Report Downloads",
+        "values": {
+          "limited": "Limited",
+          "unlimited": "Unlimited"
+        }
+      },
+      "dataStorage": {
+        "label": "Data Storage",
+        "values": {
+          "30days": "30 days",
+          "1year": "1 year",
+          "unlimited": "Unlimited"
+        }
+      }
+    },
+    "cta": {
+      "signUp": "Get Started Free",
+      "subscribe": "Subscribe",
+      "currentPlan": "Current Plan",
+      "processing": "Processing..."
+    },
+    "manageSubscription": "Manage Subscription"
+  },
   "sidebar": {
     "navigation": {
       "cropAnalysis": "Crop Analysis",
       "chatbotAssistant": "ChatBot Assistant",
       "community": "Community",
       "expert": "Expert",
+      "pricing": "Pricing",
       "setting": "Setting"
     },
     "logo": {

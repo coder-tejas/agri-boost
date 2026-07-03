@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Wheat } from "lucide-react";
 import { toast } from "sonner"; // or your toast library
@@ -15,9 +15,32 @@ const TOTAL_STEPS = 4;
 
 const QuestionnairePage = () => {
   const router = useRouter();
+  const [checking, setChecking] = useState(true);
   const t = useTranslations("crop-analysis.questionnaire");
   const { errors, validateStep, validateForm, clearError } =
     useFormValidation();
+
+  useEffect(() => {
+    const cached = localStorage.getItem("ANALYSIS_RESULT");
+    if (cached) {
+      router.replace("/crop-analysis/result");
+      return;
+    }
+
+    fetch("/api/saved-data")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0 && data[0]?.analysis) {
+          localStorage.setItem("ANALYSIS_RESULT", JSON.stringify(data[0].analysis));
+          router.replace("/crop-analysis/result");
+          return;
+        }
+        setChecking(false);
+      })
+      .catch(() => setChecking(false));
+  }, [router]);
+
+  if (checking) return null;
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<Partial<FormData>>({
@@ -74,8 +97,7 @@ const QuestionnairePage = () => {
       const userFormData: Partial<FormData> = formData;
       const userDataString = JSON.stringify(userFormData);
       localStorage.setItem("USER_OTHER_DATA", userDataString);
-      // const getSoilData = localStorage.getItem("USER_SOIL_DATA");
-      // const soil_data = getSoilData?.replace(/^data:image\/\w+;base64,/, "");
+      toast.success("Form saved! Starting analysis...");
       router.push("/crop-analysis/result");
       // Navigate to results page or submit to API
       // const result = await axios.post("/api/results", {

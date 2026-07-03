@@ -47,3 +47,4 @@ next-env.d.ts
 /scripts
 /db_backups
 /archive
+.github/workflows/ci.yml

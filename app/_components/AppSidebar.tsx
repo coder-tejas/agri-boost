@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { BotMessageSquare, Settings, Sprout, Users, User2 } from "lucide-react";
+import { BotMessageSquare, CreditCard, Settings, Sprout, Users, User2 } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -41,6 +41,11 @@ export function AppSidebar() {
       title: t("navigation.expert"),
       url: "/contact-to-expert",
       icon: User2,
+    },
+    {
+      title: t("navigation.pricing"),
+      url: "/pricing",
+      icon: CreditCard,
     },
     {
       title: t("navigation.setting"),

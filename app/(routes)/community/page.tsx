@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { Channel as StreamChannel } from "stream-chat";
 import {
   Chat,
   Channel,
@@ -12,27 +13,32 @@ import { client } from "@/lib/stream";
 import "stream-chat-react/dist/css/v2/index.css";
 import AppHeader from "@/app/_components/AppHeader";
 import { Wheat } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ChatPage() {
-  const [channel, setChannel] = useState(null);
+  const [channel, setChannel] = useState<StreamChannel | null>(null);
 
   useEffect(() => {
     async function init() {
-      const userId = "user_" + Math.random().toString(36).slice(2);
+      try {
+        const userId = "user_" + Math.random().toString(36).slice(2);
 
-      const res = await fetch("/api/token", {
-        method: "POST",
-        body: JSON.stringify({ userId }),
-      });
+        const res = await fetch("/api/token", {
+          method: "POST",
+          body: JSON.stringify({ userId }),
+        });
 
-      const { token } = await res.json();
+        const { token } = await res.json();
 
-      await client.connectUser({ id: userId, name: userId }, token);
+        await client.connectUser({ id: userId, name: userId }, token);
 
-      const globalChannel = client.channel("messaging", "global");
-      await globalChannel.watch();
+        const globalChannel = client.channel("messaging", "global");
+        await globalChannel.watch();
 
-      setChannel(globalChannel);
+        setChannel(globalChannel);
+      } catch {
+        toast.error("Failed to connect to chat. Please refresh.");
+      }
     }
 
     init();

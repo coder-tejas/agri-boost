@@ -1,7 +1,8 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,9 +24,32 @@ import { useRouter } from "next/navigation";
 const UploadPage = () => {
   const t = useTranslations("crop-analysis.upload");
   const [showCamera, setShowCamera] = useState(false);
+  const [checking, setChecking] = useState(true);
   const camera = useRef(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const cached = localStorage.getItem("ANALYSIS_RESULT");
+    if (cached) {
+      router.replace("/crop-analysis/result");
+      return;
+    }
+
+    fetch("/api/saved-data")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0 && data[0]?.analysis) {
+          localStorage.setItem("ANALYSIS_RESULT", JSON.stringify(data[0].analysis));
+          router.replace("/crop-analysis/result");
+          return;
+        }
+        setChecking(false);
+      })
+      .catch(() => setChecking(false));
+  }, [router]);
+
+  if (checking) return null;
 
   const {
     uploadedFiles,
@@ -40,7 +64,7 @@ const UploadPage = () => {
   } = useFileUpload();
 
   const handleCapture = async () => {
-    // @ts-ignore
+    // @ts-expect-error - camera ref type not available
     const photoBlob = camera.current?.takePhoto();
     if (!photoBlob) return;
 
@@ -68,38 +92,57 @@ const UploadPage = () => {
     setUploadedFiles((prev) => [...prev, { file, type, preview }]);
   };
 
-  const saveFileToLocalStorage = async (file: File): Promise<string> => {
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64 = reader.result as string;
-        // Clear previous data and save new
-        localStorage.removeItem("USER_SOIL_DATA");
-        localStorage.setItem("USER_SOIL_DATA", base64);
-        resolve(base64);
-      };
-      reader.onerror = (err) => {
-        reject(err);
-      };
-      reader.readAsDataURL(file);
+  const uploadToImageKit = async (file: File): Promise<string> => {
+    const authRes = await fetch("/api/upload-auth");
+    const { token, expire, signature, publicKey } = await authRes.json();
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("publicKey", publicKey);
+    formData.append("token", token);
+    formData.append("signature", signature);
+    formData.append("expire", String(expire));
+    formData.append("fileName", `soil_test_${Date.now()}`);
+
+    const uploadRes = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
+      method: "POST",
+      body: formData,
     });
+
+    if (!uploadRes.ok) {
+      const errBody = await uploadRes.text();
+      throw new Error(`ImageKit upload failed: ${errBody}`);
+    }
+
+    const data = await uploadRes.json();
+    return data.url;
   };
 
   const handleClick = async () => {
-    if (uploadedFiles.length === 0) return;
+    if (uploadedFiles.length === 0) {
+      toast.error("Please select a file first.");
+      return;
+    }
 
     const firstFile = uploadedFiles[0].file;
 
     if (!(firstFile instanceof File)) {
-      console.error("Invalid file type, expected File instance");
+      toast.error("Invalid file type");
       return;
     }
 
     try {
-      await saveFileToLocalStorage(firstFile);
+      toast.loading("Uploading file...");
+      const imageUrl = await uploadToImageKit(firstFile);
+      toast.dismiss();
+      toast.success("File uploaded successfully");
+      localStorage.removeItem("USER_SOIL_DATA");
+      localStorage.setItem("USER_SOIL_DATA", imageUrl);
       router.push("/crop-analysis/questionnaire");
     } catch (err) {
-      console.error("Error saving file to storage:", err);
+      toast.dismiss();
+      toast.error("Upload failed. Please try again.");
+      console.error("Error uploading file:", err);
     }
   };
 
