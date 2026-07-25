@@ -5,9 +5,10 @@ import { checkAndIncrement, type Plan } from "@/lib/plan-limits";
 import { db } from "@/configs/db";
 import { subscriptions } from "@/configs/schema";
 import { eq } from "drizzle-orm";
+import logger from "@/lib/logger";
 
 export async function POST(req: NextRequest) {
-  console.log("[ResultsAPI] Incoming POST /api/results");
+  logger.info("Incoming POST /api/results");
 
   try {
     const body = await req.json();
@@ -47,7 +48,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log("[ResultsAPI] Sending event to Inngest");
+    logger.info("Sending event to Inngest");
 
     const result = await inngest.send({
       name: "ai/generate-crop-yield",
@@ -66,21 +67,19 @@ export async function POST(req: NextRequest) {
     const eventId = result.ids?.[0];
 
     if (!eventId) {
-      console.error("[ResultsAPI] Inngest did not return event ID", result);
+      logger.error({ result }, "Inngest did not return event ID");
       return NextResponse.json(
         { error: "Failed to start background job" },
         { status: 500 }
       );
     }
 
-    console.log("[ResultsAPI] Inngest job triggered successfully", {
-      eventId,
-    });
+    logger.info({ eventId }, "Inngest job triggered successfully");
 
     return NextResponse.json({ eventId });
 
   } catch (error: unknown) {
-    console.error("[ResultsAPI] Unhandled error while triggering Inngest job", error);
+    logger.error({ error }, "Unhandled error while triggering Inngest job");
     const message = error instanceof Error ? error.message : "Unknown error";
 
     return NextResponse.json(

@@ -3,6 +3,7 @@ import { GoogleGenAI } from "@google/genai"
 import { db } from "@/configs/db";
 import { userSoilAnalysis } from "@/configs/schema";
 import moment from "moment";
+import logger from "@/lib/logger";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -213,7 +214,7 @@ You are an advanced agricultural AI advisor specializing in precision farming an
 * Be concise, factual, and actionable—avoid generic advice.
 * Recommendations should be regionally realistic and scientifically backed.
 `
-    console.log(prompt);
+    logger.debug({ promptLength: prompt.length }, "Sending prompt to Gemini");
 
     const GeneratePrediction = await step.run("GeneratePrediction", async () => {
       try {
@@ -233,7 +234,7 @@ You are an advanced agricultural AI advisor specializing in precision farming an
         const parsed = JSON.parse(cleaned);
         return parsed;
       } catch (e) {
-        console.error("Gemini API failed, using fallback response:", e);
+        logger.error({ err: e }, "Gemini API failed, using fallback response");
         return FALLBACK_RESPONSE.analysis;
       }
     });
@@ -249,7 +250,7 @@ You are an advanced agricultural AI advisor specializing in precision farming an
           eventId: event.id,
         });
       } catch (error) {
-        console.error("Database insert error (non-fatal):", error);
+        logger.error({ error }, "Database insert error (non-fatal)");
       }
     })
     //     const deleteImage = await step.run("DeleteImage", async () => {

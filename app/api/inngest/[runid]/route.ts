@@ -1,19 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import logger from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
-  console.log("[InngestStatus] Incoming request:", req.url);
+  logger.info({ url: req.url }, "Incoming request");
 
   const runId = req.nextUrl.searchParams.get("runId");
 
   if (!runId) {
-    console.error("[InngestStatus] Missing runId in query params");
+    logger.error("Missing runId in query params");
     return NextResponse.json({ error: "Missing runId" }, { status: 400 });
   }
 
-  console.log("[InngestStatus] Fetching status for runId:", runId);
+  logger.info({ runId }, "Fetching status for runId");
 
   const inngestUrl = `https://app.inngest.com/v1/events/${runId}/runs`;
-  console.log("[InngestStatus] Calling Inngest API:", inngestUrl);
+  logger.info({ url: inngestUrl }, "Calling Inngest API");
 
   let res;
   try {
@@ -23,18 +24,18 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (err) {
-    console.error("[InngestStatus] Network error while calling Inngest:", err);
+    logger.error({ err }, "Network error while calling Inngest");
     return NextResponse.json(
       { error: "Failed to reach Inngest API" },
       { status: 500 }
     );
   }
 
-  console.log("[InngestStatus] Inngest response status:", res.status);
+  logger.info({ status: res.status }, "Inngest response status");
 
   if (!res.ok) {
     const text = await res.text();
-    console.error("[InngestStatus] Inngest API error body:", text);
+    logger.error({ status: res.status, body: text }, "Inngest API error body");
 
     return NextResponse.json(
       {
@@ -50,15 +51,15 @@ export async function GET(req: NextRequest) {
   try {
     json = await res.json();
   } catch (err) {
-    console.error("[InngestStatus] Failed to parse Inngest JSON:", err);
+    logger.error({ err }, "Failed to parse Inngest JSON");
     return NextResponse.json(
       { error: "Invalid JSON from Inngest" },
       { status: 500 }
     );
   }
 
-  console.log("[InngestStatus] Successfully fetched run status");
-  console.log("[InngestStatus] Payload:", JSON.stringify(json, null, 2));
+  logger.info("Successfully fetched run status");
+  logger.debug({ payload: json }, "Run status payload");
 
   return NextResponse.json(json);
 }

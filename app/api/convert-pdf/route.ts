@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer";
 import { generateSoilReportHTML } from "@/lib/SoilReportHtml";
+import logger from "@/lib/logger";
 
 export async function POST(req: Request) {
   try {
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
       },
     });
   } catch (error) {
-    console.error("PDF generation error:", error);
+    logger.error({ error }, "PDF generation error");
     return NextResponse.json(
       { error: "Failed to generate PDF" },
       { status: 500 }
